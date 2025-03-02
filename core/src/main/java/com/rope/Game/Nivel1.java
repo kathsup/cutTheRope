@@ -147,7 +147,7 @@ public class Nivel1 implements Screen{
         boxSprite = new Sprite(new Texture("dulce.png"));
         
        
-        float desiredSpriteSizeInMeters = 0.08f;  // El tamaño deseado del sprite en metros
+        float desiredSpriteSizeInMeters = 0.05f;  // El tamaño deseado del sprite en metros
         float spriteSizeInPixels = desiredSpriteSizeInMeters * PIXELS_TO_METER;  // Convertir a píxeles
         boxSprite.setSize(spriteSizeInPixels, spriteSizeInPixels);  // Ajustar el tamaño del sprite
         boxSprite.setOrigin(boxSprite.getWidth()/2, boxSprite.getHeight()/2); //centrar el sprite porque si no sale volando en las colisiones
