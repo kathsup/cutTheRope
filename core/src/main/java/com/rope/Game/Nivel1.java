@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -45,14 +46,20 @@ public class Nivel1 implements Screen{
     private SpriteBatch batch;
     private Array<Body> tmpBodies = new Array<Body>();
     private Array<Body> bodiesToRemove;
-    private Set<Body> collidedStars = new HashSet<>();
+    private Set<Integer> collidedStars = new HashSet<>();
     private Set<Body> collidedRana = new HashSet<>();
 
     
    private float time = 0f;
     private float forceMagnitude = 1.0f;
     private Body ballBody;
-    private Star[] star;
+    
+    private Texture[] starTextures; // Arreglo de texturas de estrellas
+    private Vector2[] starPositions; // Arreglo de posiciones de estrellas
+    private Rectangle[] starRectangles;
+    private boolean[] starCollected;
+    
+    //private Star[] star;
     private Rana rana; 
     Body bodyBox;
     
@@ -68,7 +75,7 @@ public class Nivel1 implements Screen{
         bodiesToRemove = new Array<Body>();
 
         // Crear el mundo de Box2D
-        world = new World(new Vector2(0, -55f), true);
+        world = new World(new Vector2(0, -25f), true);
         debugRenderer = new Box2DDebugRenderer();
         
         world.setContactListener(new ContactListener() {
@@ -79,13 +86,10 @@ public class Nivel1 implements Screen{
 
                 // Verificar si el dulce (ballBody) esta involucrado en la colisión con una estrella
                 if (isCollidingWithStar(fixtureA, fixtureB)) {
-                    
-                    if (fixtureA.getBody().getUserData() instanceof Sprite && fixtureB.getBody().getUserData() instanceof Star) {
-                        handleStarCollision(fixtureB.getBody());
-                    } else if (fixtureA.getBody().getUserData() instanceof Star && fixtureB.getBody().getUserData() instanceof Sprite) {
-                        handleStarCollision(fixtureA.getBody());
-                    }
+                    // La lógica de colisión con estrellas ahora se maneja en render()
                 } else if (isCollidingWithRana(fixtureA, fixtureB)) {
+                    handleRanaCollision(rana.getBody());
+                }else if (isCollidingWithRana(fixtureA, fixtureB)) {
                     handleRanaCollision(rana.getBody()); 
                 }
 
@@ -106,16 +110,37 @@ public class Nivel1 implements Screen{
     });
         
         
-        star = new Star[3];
+       /* star = new Star[3];
         
         star = new Star[]{
             new Star(world, 0, -1),
             new Star(world, 0, -4),
             new Star(world, 0, -7),
+        };*/
+       
+       starTextures = new Texture[]{
+                new Texture("estrella.png"),
+                new Texture("estrella.png"),
+                new Texture("estrella.png")
         };
+        starPositions = new Vector2[]{
+                new Vector2(0, -1),
+                new Vector2(0, -4),
+                new Vector2(0, -7)
+        };
+        
+        // Crear rectángulos para las estrellas
+        starRectangles = new Rectangle[starTextures.length];
+        for (int i = 0; i < starTextures.length; i++) {
+            starRectangles[i] = new Rectangle(starPositions[i].x - 1, starPositions[i].y - 1, 2, 2); // Ajusta el tamaño
+        }
 
         rana = new Rana(world, 0, -12);
         
+        starCollected = new boolean[starTextures.length];
+        for (int i = 0; i < starCollected.length; i++) {
+            starCollected[i] = false;
+        }
         
         // Configurar la cámara
         camera = new OrthographicCamera(Gdx.graphics.getWidth() / PIXELS_TO_METER,
@@ -203,47 +228,19 @@ public class Nivel1 implements Screen{
     
 //para detectar si se toca con una estrella
     private boolean isCollidingWithStar(Fixture fixtureA, Fixture fixtureB) {
-    Body bodyA = fixtureA.getBody();
-    Body bodyB = fixtureB.getBody();
-
-    if (bodyA.getUserData() instanceof Sprite && bodyB.getUserData() instanceof Star) {
-        handleStarCollision(bodyB);
-        return true;
-    } else if (bodyA.getUserData() instanceof Star && bodyB.getUserData() instanceof Sprite) {
-        handleStarCollision(bodyA); 
-        return true;
-    }
-    return false;
+        // La lógica de colisión con estrellas ahora se maneja en render()
+        return false;
     }
     
     //manejar que pasa
-    private void handleStarCollision(Body starBody) {
-    if (!collidedStars.contains(starBody)) {
-        puntos += 1;
-        System.out.println("¡Colision con estrella! Puntos: " + puntos);
-        bodiesToRemove.add(starBody);
-        collidedStars.add(starBody); // Marcar la estrella como colisionada para luego borrarla
-       
-        
-        // Eliminar la estrella del arreglo star
-        for (int i = 0; i < star.length; i++) {
-            if (star[i].getBody() == starBody) {
-                star[i] = null;
-                break;
-            }
+   private void handleStarCollision(int starIndex) {
+        if (!collidedStars.contains(starIndex)) {
+            puntos += 1;
+            System.out.println("¡Colision con estrella! Puntos: " + puntos);
+            collidedStars.add(starIndex);
+            starCollected[starIndex] = true; // Marcar la estrella como recolectada
         }
-        // Reconstruir el array de stars sin los nulls porque si no hay exceptions
-        Star[] newStar = new Star[star.length -1 ];
-        int j = 0;
-        for (int i = 0; i < star.length; i++){
-            if(star[i] != null){
-                newStar[j] = star[i];
-                j++;
-            }
-        }
-        star = newStar;
     }
-}
    
     //lo mismo de la estrella pero con la rana
     private boolean isCollidingWithRana(Fixture fixtureA, Fixture fixtureB) {
@@ -304,18 +301,29 @@ public void render(float delta) {
         //cambia la posicion de la cuerda
         float direction = (float) Math.sin(time * 2 * Math.PI); // Cambia cada 0.5 segundos
 
-        if (ballBody != null) { // Verificar si ballBody es null, porque si no sale exception porque se pudo haber borrado
-        ballBody.applyForceToCenter(direction * forceMagnitude, 0, true);
+       if (ballBody != null) { // Verificar si ballBody es null, porque si no sale exception porque se pudo haber borrado
+        Rectangle ballRect = new Rectangle(ballBody.getPosition().x - 0.5f, ballBody.getPosition().y - 0.5f, 1, 1); // Rectángulo del dulce
+        for (int i = 0; i < starRectangles.length; i++) {
+            if (!starCollected[i] && ballRect.overlaps(starRectangles[i])) { // Verificar si la estrella no ha sido recolectada y hay colisión
+                handleStarCollision(i);
+            }
+        }
     }
         
         
     // Dibujar los sprites
     batch.begin();
     
-    for (Star s : star) {
+   /* for (Star s : star) {
         s.draw(batch);
-    }
+    }*/
     
+   for (int i = 0; i < starTextures.length; i++) {
+            if (!starCollected[i]) { // Verificar si la estrella ha sido recolectada
+                batch.draw(starTextures[i], starPositions[i].x - 1, starPositions[i].y - 1, 2, 2);
+            }
+        }
+   
     rana.draw(batch);
     
     world.getBodies(tmpBodies);
@@ -388,12 +396,20 @@ private boolean isTouchingRope(float touchX, float touchY) {
     
     @Override
     public void dispose() {
-       for (Star s : star) {
+      /* for (Star s : star) {
         if (s.getBody() != null && s.getBody().getWorld() != null) {
             s.getBody().getWorld().destroyBody(s.getBody());
         }
         
-    }
+    }*/
+      
+      if (starTextures != null) {
+            for (Texture texture : starTextures) {
+                if (texture != null) {
+                    texture.dispose();
+                }
+            }
+        }
 
     // Destruir la rana
     if (rana != null) {
