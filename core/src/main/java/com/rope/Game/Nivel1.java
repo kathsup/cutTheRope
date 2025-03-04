@@ -34,6 +34,7 @@ import java.util.Set;
 
 public class Nivel1 implements Screen{
 
+    
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private OrthographicCamera camera;
@@ -41,84 +42,61 @@ public class Nivel1 implements Screen{
     private final float TIMESTEP = 1 / 60f;
     private final int VELOCITYITERATIONS = 8, POSITIONITERATIONS = 3;
 
-    private Sprite boxSprite;
-    private final float PIXELS_TO_METER = 32;  
+    private final float PIXELS_TO_METER = 32;
     private SpriteBatch batch;
     private Array<Body> tmpBodies = new Array<Body>();
     private Array<Body> bodiesToRemove;
     private Set<Integer> collidedStars = new HashSet<>();
     private Set<Body> collidedRana = new HashSet<>();
 
-    
-   private float time = 0f;
+    private float time = 0f;
     private float forceMagnitude = 1.0f;
-    private Body ballBody;
-    
-    private Texture[] starTextures; // Arreglo de texturas de estrellas
-    private Vector2[] starPositions; // Arreglo de posiciones de estrellas
+    private Dulce dulce; // Instancia de la clase Dulce
+
+    private Texture[] starTextures;
+    private Vector2[] starPositions;
     private Rectangle[] starRectangles;
     private boolean[] starCollected;
-    
-    //private Star[] star;
-    private Rana rana; 
-    Body bodyBox;
-    
-   private DistanceJoint distanceJoint;
-   private int puntos = 0; 
-    
+
+    private Rana rana;
+    private Body bodyBox;
+
+    private DistanceJoint distanceJoint;
+    private int puntos = 0;
 
     @Override
     public void show() {
-
-       
         batch = new SpriteBatch();
         bodiesToRemove = new Array<Body>();
 
-        // Crear el mundo de Box2D
         world = new World(new Vector2(0, -25f), true);
         debugRenderer = new Box2DDebugRenderer();
-        
+
         world.setContactListener(new ContactListener() {
             @Override
             public void beginContact(Contact contact) {
                 Fixture fixtureA = contact.getFixtureA();
                 Fixture fixtureB = contact.getFixtureB();
 
-                // Verificar si el dulce (ballBody) esta involucrado en la colisión con una estrella
-                if (isCollidingWithStar(fixtureA, fixtureB)) {
-                    // La lógica de colisión con estrellas ahora se maneja en render()
-                } else if (isCollidingWithRana(fixtureA, fixtureB)) {
+                if (isCollidingWithRana(fixtureA, fixtureB)) {
                     handleRanaCollision(rana.getBody());
-                }else if (isCollidingWithRana(fixtureA, fixtureB)) {
-                    handleRanaCollision(rana.getBody()); 
                 }
-
             }
 
-        @Override
-        public void endContact(Contact contact) {
-            
-        }
+            @Override
+            public void endContact(Contact contact) {
+            }
 
-        @Override
-        public void preSolve(Contact contact, Manifold oldManifold) {
-        }
+            @Override
+            public void preSolve(Contact contact, Manifold oldManifold) {
+            }
 
-        @Override
-        public void postSolve(Contact contact, ContactImpulse impulse) {
-        }
-    });
-        
-        
-       /* star = new Star[3];
-        
-        star = new Star[]{
-            new Star(world, 0, -1),
-            new Star(world, 0, -4),
-            new Star(world, 0, -7),
-        };*/
-       
-       starTextures = new Texture[]{
+            @Override
+            public void postSolve(Contact contact, ContactImpulse impulse) {
+            }
+        });
+
+        starTextures = new Texture[]{
                 new Texture("estrella.png"),
                 new Texture("estrella.png"),
                 new Texture("estrella.png")
@@ -128,154 +106,100 @@ public class Nivel1 implements Screen{
                 new Vector2(0, -4),
                 new Vector2(0, -7)
         };
-        
-        // Crear rectángulos para las estrellas
+
         starRectangles = new Rectangle[starTextures.length];
         for (int i = 0; i < starTextures.length; i++) {
-            starRectangles[i] = new Rectangle(starPositions[i].x - 1, starPositions[i].y - 1, 2, 2); // Ajusta el tamaño
+            starRectangles[i] = new Rectangle(starPositions[i].x - 1, starPositions[i].y - 1, 2, 2);
         }
 
         rana = new Rana(world, 0, -12);
-        
+
         starCollected = new boolean[starTextures.length];
         for (int i = 0; i < starCollected.length; i++) {
             starCollected[i] = false;
         }
-        
-        // Configurar la cámara
+
         camera = new OrthographicCamera(Gdx.graphics.getWidth() / PIXELS_TO_METER,
-                                        Gdx.graphics.getHeight() / PIXELS_TO_METER);
-        camera.position.set(0, 0, 0);  // Centrar la cámara en el origen
+                Gdx.graphics.getHeight() / PIXELS_TO_METER);
+        camera.position.set(0, 0, 0);
         camera.update();
 
-        // Definir el cuerpo - círculo
-        BodyDef ballDef = new BodyDef();
-        ballDef.type = BodyDef.BodyType.DynamicBody;
-        ballDef.position.set(0, 3);  // Posición inicial en el mundo
+        // Crear el dulce usando la clase Dulce
+        dulce = new Dulce(world, 0, 3, PIXELS_TO_METER);
 
-        // Definir la forma 
-        CircleShape shape = new CircleShape();
-        shape.setRadius(0.5f);  
-
-        // Definir las propiedades de la fixture del circulo
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 5f; //para los otros juegos puede tener menor densidad
-        fixtureDef.friction = 0.000001f;
-        fixtureDef.restitution = 0.000001f;
-
-        // Crear el cuerpo del circulo en el mundo
-        ballBody = world.createBody(ballDef);
-        ballBody.createFixture(fixtureDef);
-
-        // textura y crear el sprite
-        boxSprite = new Sprite(new Texture("dulce.png"));
-        
-       
-        float desiredSpriteSizeInMeters = 0.05f;  // El tamaño deseado del sprite en metros
-        float spriteSizeInPixels = desiredSpriteSizeInMeters * PIXELS_TO_METER;  // Convertir a píxeles
-        boxSprite.setSize(spriteSizeInPixels, spriteSizeInPixels);  // Ajustar el tamaño del sprite
-        boxSprite.setOrigin(boxSprite.getWidth()/2, boxSprite.getHeight()/2); //centrar el sprite porque si no sale volando en las colisiones
-
-        // Asignar el sprite al cuerpo 
-        ballBody.setUserData(boxSprite);
-
-        //caja
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDEF = new FixtureDef();
-        
-        bodyDef.position.y = 12; 
+
+        bodyDef.position.y = 12;
         PolygonShape box = new PolygonShape();
         box.setAsBox(.25f, .25f);
-        fixtureDEF.shape = box; 
-        
+        fixtureDEF.shape = box;
+
         bodyBox = world.createBody(bodyDef);
         bodyBox.createFixture(fixtureDEF);
         box.dispose();
-        
-        //distancia entre el punto y dulce- hacer cuerda
+
         DistanceJointDef distanceJointDef = new DistanceJointDef();
-        distanceJointDef.bodyA = ballBody; 
-        distanceJointDef.bodyB = bodyBox; 
-        distanceJointDef.length = 9; 
+        distanceJointDef.bodyA = dulce.getBody();
+        distanceJointDef.bodyB = bodyBox;
+        distanceJointDef.length = 9;
         distanceJoint = (DistanceJoint) world.createJoint(distanceJointDef);
-        
-        
-        //detectar que se toco la cuerda para soltar el dulce
+
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-               
                 Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
-
-                // Verificar si el clic ocurrió sobre la cuerda
                 if (isTouchingRope(worldCoordinates.x, worldCoordinates.y)) {
-                    // Romper la cuerda destruyendo el joint
                     world.destroyJoint(distanceJoint);
                     distanceJoint = null;
                 }
                 return true;
             }
         });
-        
-        
-        
-       
-        shape.dispose();//liberar recursos
-        
     }
-    
-    
-//para detectar si se toca con una estrella
-    private boolean isCollidingWithStar(Fixture fixtureA, Fixture fixtureB) {
-        // La lógica de colisión con estrellas ahora se maneja en render()
-        return false;
-    }
-    
-    //manejar que pasa
-   private void handleStarCollision(int starIndex) {
+
+    private void handleStarCollision(int starIndex) {
         if (!collidedStars.contains(starIndex)) {
             puntos += 1;
             System.out.println("¡Colision con estrella! Puntos: " + puntos);
             collidedStars.add(starIndex);
-            starCollected[starIndex] = true; // Marcar la estrella como recolectada
+            starCollected[starIndex] = true;
         }
     }
-   
-    //lo mismo de la estrella pero con la rana
-    private boolean isCollidingWithRana(Fixture fixtureA, Fixture fixtureB) {
-    Body bodyA = fixtureA.getBody();
-    Body bodyB = fixtureB.getBody();
 
-    if (bodyA == ballBody && bodyB == rana.getBody()) {
-        return true;
-    } else if (bodyB == ballBody && bodyA == rana.getBody()) {
-        return true;
+    private boolean isCollidingWithRana(Fixture fixtureA, Fixture fixtureB) {
+        Body bodyA = fixtureA.getBody();
+        Body bodyB = fixtureB.getBody();
+
+        if (dulce != null && dulce.getBody() != null && bodyA == dulce.getBody() && bodyB == rana.getBody()) {
+            return true;
+        } else if (dulce != null && dulce.getBody() != null && bodyB == dulce.getBody() && bodyA == rana.getBody()) {
+            return true;
+        }
+        return false;
     }
-    return false;
-}
-    
+
     private void handleRanaCollision(Body ranaBody) {
     if (!collidedRana.contains(ranaBody)) {
         System.out.println("¡La rana se comio el dulce!");
-        bodiesToRemove.add(ballBody);
+        if (dulce != null && dulce.getBody() != null) {
+            bodiesToRemove.add(dulce.getBody()); // Agregar el cuerpo para ser destruido
+        }
         collidedRana.add(ranaBody);
-        ballBody = null;
-        boxSprite.getTexture().dispose();
-        boxSprite = null;
+        if (dulce != null) {
+            dulce.dispose();
+            dulce = null;
+        }
 
-        rana.setEatingTexture(); // Cambiar a la textura de comiendo
-
-        // Usar un Timer para volver a la textura normal después de un breve retraso
+        rana.setEatingTexture();
         Timer.schedule(new Timer.Task() {
             @Override
             public void run() {
-                rana.setNormalTexture(); // Volver a la textura normal
+                rana.setNormalTexture();
             }
-        }, 0.09f); // lo que dura la otra imagen
+        }, 0.09f);
     }
 }
-    
     
    @Override
 public void render(float delta) {
@@ -284,13 +208,13 @@ public void render(float delta) {
 
     // Actualizar el mundo de Box2D
     world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
-    
+
     for (Body body : bodiesToRemove) {
         world.destroyBody(body);
     }
     bodiesToRemove.clear();
 
-    // Dibujar el debug de Box2D 
+    // Dibujar el debug de Box2D
     debugRenderer.render(world, camera.combined);
 
     // Configurar la matriz de proyección para dibujar sprites
@@ -298,43 +222,40 @@ public void render(float delta) {
 
     time += delta;
 
-        //cambia la posicion de la cuerda
-        float direction = (float) Math.sin(time * 2 * Math.PI); // Cambia cada 0.5 segundos
+    // Cambia la posición de la cuerda
+    float direction = (float) Math.sin(time * 2 * Math.PI); // Cambia cada 0.5 segundos
 
-       if (ballBody != null) { // Verificar si ballBody es null, porque si no sale exception porque se pudo haber borrado
-        Rectangle ballRect = new Rectangle(ballBody.getPosition().x - 0.5f, ballBody.getPosition().y - 0.5f, 1, 1); // Rectángulo del dulce
-        for (int i = 0; i < starRectangles.length; i++) {
-            if (!starCollected[i] && ballRect.overlaps(starRectangles[i])) { // Verificar si la estrella no ha sido recolectada y hay colisión
-                handleStarCollision(i);
-            }
-        }
-    }
-        
-        
+       if (dulce != null && dulce.getBody() != null) { // Verificar si dulce y su cuerpo son null
+           dulce.getBody().applyForceToCenter(direction * forceMagnitude, 0, true); // Aplicar fuerza al dulce
+           Rectangle ballRect = new Rectangle(dulce.getBody().getPosition().x - 0.5f, dulce.getBody().getPosition().y - 0.5f, 1, 1); // Rectángulo del dulce
+           for (int i = 0; i < starRectangles.length; i++) {
+               if (!starCollected[i] && ballRect.overlaps(starRectangles[i])) { // Verificar si la estrella no ha sido recolectada y hay colisión
+                   handleStarCollision(i);
+               }
+           }
+       }
+
     // Dibujar los sprites
     batch.begin();
-    
-   /* for (Star s : star) {
-        s.draw(batch);
-    }*/
-    
-   for (int i = 0; i < starTextures.length; i++) {
-            if (!starCollected[i]) { // Verificar si la estrella ha sido recolectada
-                batch.draw(starTextures[i], starPositions[i].x - 1, starPositions[i].y - 1, 2, 2);
-            }
+
+    for (int i = 0; i < starTextures.length; i++) {
+        if (!starCollected[i]) { // Verificar si la estrella ha sido recolectada
+            batch.draw(starTextures[i], starPositions[i].x - 1, starPositions[i].y - 1, 2, 2);
         }
-   
+    }
+
     rana.draw(batch);
-    
+
     world.getBodies(tmpBodies);
     for (Body body : tmpBodies) {
         if (body.getUserData() != null && body.getUserData() instanceof Sprite) {
-            
-            if (body == ballBody && ballBody == null) {
-                continue; // Saltar si el dulce ha sido comido
+
+            if (dulce == null || body == dulce.getBody()) {
+                if (dulce == null) {
+                    continue;
+                }
             }
-            
-            
+
             Sprite sprite = (Sprite) body.getUserData();
 
             // Obtener el tamaño del sprite
@@ -343,8 +264,8 @@ public void render(float delta) {
 
             // Ajustar la posición del sprite para que esté centrado en el cuerpo
             sprite.setPosition(
-                body.getPosition().x - spriteWidth / 2,
-                body.getPosition().y - spriteHeight / 2
+                    body.getPosition().x - spriteWidth / 2,
+                    body.getPosition().y - spriteHeight / 2
             );
 
             // Actualizar la rotación del sprite basado en el cuerpo de Box2D
@@ -352,26 +273,27 @@ public void render(float delta) {
             sprite.draw(batch);
         }
     }
-    
-    
-    
+
     batch.end();
 }
 
 private boolean isTouchingRope(float touchX, float touchY) {
-        // Obtener las posiciones de los cuerpos conectados por la cuerda
-        Vector2 ballPosition = ballBody.getPosition();
-        Vector2 boxPosition = bodyBox.getPosition();
-
-        //hasta donde se acepta que se toco la cuerda
-        float tolerance = 0.5f;
-
-        // Verificar si el clic está dentro del rango de la cuerda - entre el dulce y la caja
-        return (touchX > Math.min(ballPosition.x, boxPosition.x) - tolerance &&
-                touchX < Math.max(ballPosition.x, boxPosition.x) + tolerance &&
-                touchY > Math.min(ballPosition.y, boxPosition.y) - tolerance &&
-                touchY < Math.max(ballPosition.y, boxPosition.y) + tolerance);
+    // Obtener las posiciones de los cuerpos conectados por la cuerda
+    if (dulce == null || dulce.getBody() == null) {
+        return false;
     }
+    Vector2 ballPosition = dulce.getBody().getPosition();
+    Vector2 boxPosition = bodyBox.getPosition();
+
+    // hasta donde se acepta que se toco la cuerda
+    float tolerance = 0.5f;
+
+    // Verificar si el clic está dentro del rango de la cuerda - entre el dulce y la caja
+    return (touchX > Math.min(ballPosition.x, boxPosition.x) - tolerance &&
+            touchX < Math.max(ballPosition.x, boxPosition.x) + tolerance &&
+            touchY > Math.min(ballPosition.y, boxPosition.y) - tolerance &&
+            touchY < Math.max(ballPosition.y, boxPosition.y) + tolerance);
+}
 
     @Override
     public void resize(int width, int height) {
@@ -428,8 +350,8 @@ private boolean isTouchingRope(float touchX, float touchY) {
     }
 
     // Destruir la textura del dulce
-    if (boxSprite != null && boxSprite.getTexture() != null) {
-        boxSprite.getTexture().dispose();
+   if (dulce != null) {
+        dulce.dispose(); 
     }
 
     // Destruir el batch de sprites
