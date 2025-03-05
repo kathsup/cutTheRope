@@ -10,7 +10,9 @@ public class main extends Game {
     @Override
     public void create() {
         
-        setScreen(new Nivel1());
+        //setScreen(new Nivel1());
+        //setScreen(new Nivel2());
+        setScreen(new pruebaburbuja());
        // batch = new SpriteBatch();
         //image = new Texture("libgdx.png");
     }
