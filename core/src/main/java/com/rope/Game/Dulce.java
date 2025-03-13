@@ -13,6 +13,8 @@ public class Dulce {
     private Sprite sprite;
     private World world;
     private float pixelsToMeter;
+    FixtureDef fixtureDef;
+    
 
     public Dulce(World world, float x, float y, float pixelsToMeter) {
         this.world = world;
@@ -28,7 +30,7 @@ public class Dulce {
         shape.setRadius(0.5f);
 
         // Definir las propiedades de la fixture del circulo
-        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
         fixtureDef.density = 5f;
         fixtureDef.friction = 0.000001f;
@@ -58,6 +60,22 @@ public class Dulce {
 
     public Sprite getSprite() {
         return sprite;
+    }
+    
+    public void setDensity(float density) {
+        if (fixtureDef != null) {
+            fixtureDef.density = density;
+            body.destroyFixture(body.getFixtureList().first()); // Destruir la fixture anterior
+            body.createFixture(fixtureDef); // Crear una nueva fixture con la nueva densidad
+        }
+    }
+
+    public void setFriction(float friction) {
+        if (fixtureDef != null) {
+            fixtureDef.friction = friction;
+            body.destroyFixture(body.getFixtureList().first()); // Destruir la fixture anterior
+            body.createFixture(fixtureDef); // Crear una nueva fixture con la nueva fricción
+        }
     }
 
     public void dispose() {

@@ -30,8 +30,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.Timer;
 import java.util.HashSet;
 import java.util.Set;
-
-public class Nivel2 implements Screen {
+public class Nivel4 implements Screen {
 
     private World world;
     private Box2DDebugRenderer debugRenderer;
@@ -63,7 +62,7 @@ public class Nivel2 implements Screen {
     private Rana rana;
     Body bodyBox;
 
-    private DistanceJoint distanceJoint;
+    private DistanceJoint distanceJoint, distanceJoint2, distanceJoint3; // Cuerdas adicionales
     private int puntos = 0;
 
     @Override
@@ -113,8 +112,8 @@ public class Nivel2 implements Screen {
         };
         starPositions = new Vector2[]{
             new Vector2(0, 7),
-            new Vector2(0, -2),
-            new Vector2(0, -4)
+            new Vector2(-5, -2),
+            new Vector2(-3, -4)
         };
 
         // Crear rectángulos para las estrellas
@@ -123,7 +122,7 @@ public class Nivel2 implements Screen {
             starRectangles[i] = new Rectangle(starPositions[i].x - 1, starPositions[i].y - 1, 2, 2); // Ajusta el tamaño
         }
 
-        rana = new Rana(world, 0, -12);
+        rana = new Rana(world, 0, 10);
 
         starCollected = new boolean[starTextures.length];
         for (int i = 0; i < starCollected.length; i++) {
@@ -184,12 +183,35 @@ public class Nivel2 implements Screen {
         DistanceJointDef distanceJointDef = new DistanceJointDef();
         distanceJointDef.bodyA = ballBody;
         distanceJointDef.bodyB = bodyBox;
-        distanceJointDef.length = 9;
+        distanceJointDef.length = 15;
         distanceJoint = (DistanceJoint) world.createJoint(distanceJointDef);
 
+        // Crear cuerda en la esquina inferior izquierda
+        BodyDef leftAnchorDef = new BodyDef();
+        leftAnchorDef.type = BodyDef.BodyType.StaticBody;
+        leftAnchorDef.position.set(-10, -10); // Posición de la esquina inferior izquierda
+        Body leftAnchorBody = world.createBody(leftAnchorDef);
+
+        DistanceJointDef distanceJointDef2 = new DistanceJointDef();
+        distanceJointDef2.bodyA = ballBody;
+        distanceJointDef2.bodyB = leftAnchorBody;
+        distanceJointDef2.length = 5; // Longitud de la cuerda
+        distanceJoint2 = (DistanceJoint) world.createJoint(distanceJointDef2);
+
+        // Crear cuerda en la esquina inferior derecha
+        BodyDef rightAnchorDef = new BodyDef();
+        rightAnchorDef.type = BodyDef.BodyType.StaticBody;
+        rightAnchorDef.position.set(10, -5); // Posición de la esquina inferior derecha
+        Body rightAnchorBody = world.createBody(rightAnchorDef);
+
+        DistanceJointDef distanceJointDef3 = new DistanceJointDef();
+        distanceJointDef3.bodyA = ballBody;
+        distanceJointDef3.bodyB = rightAnchorBody;
+        distanceJointDef3.length = 7; // Longitud de la cuerda
+        distanceJoint3 = (DistanceJoint) world.createJoint(distanceJointDef3);
+
         //detectar que se tocó la cuerda para soltar el dulce
-     
-    Gdx.input.setInputProcessor(new InputAdapter() {
+        Gdx.input.setInputProcessor(new InputAdapter() {
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
         Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
@@ -201,44 +223,65 @@ public class Nivel2 implements Screen {
             return true;
         }
 
-        // Verificar si el clic ocurrió sobre la cuerda
-        if (isTouchingRope(worldCoordinates.x, worldCoordinates.y)) {
-            if (distanceJoint != null) {
-                System.out.println("Destruyendo la cuerda...");
-                world.destroyJoint(distanceJoint);
-                distanceJoint = null; // Establecer la referencia a null
-            } else {
-                System.out.println("La cuerda ya ha sido destruida.");
+        // Verificar si el clic ocurrió sobre alguna cuerda
+        int touchedRope = getTouchedRope(worldCoordinates.x, worldCoordinates.y);
+        if (touchedRope != -1) {
+            switch (touchedRope) {
+                case 1:
+                    if (distanceJoint != null) {
+                        System.out.println("Destruyendo la cuerda 1...");
+                        world.destroyJoint(distanceJoint);
+                        distanceJoint = null;
+                    }
+                    break;
+                case 2:
+                    if (distanceJoint2 != null) {
+                        System.out.println("Destruyendo la cuerda 2...");
+                        world.destroyJoint(distanceJoint2);
+                        distanceJoint2 = null;
+                    }
+                    break;
+                case 3:
+                    if (distanceJoint3 != null) {
+                        System.out.println("Destruyendo la cuerda 3...");
+                        world.destroyJoint(distanceJoint3);
+                        distanceJoint3 = null;
+                    }
+                    break;
+                default:
+                    System.out.println("No se tocó ninguna cuerda.");
+                    break;
             }
         }
         return true;
     }
 });
     }
-// Método para verificar si el clic está sobre la burbuja
-private boolean isTouchingBubble(float touchX, float touchY) {
-    if (bubble == null) {
-        System.out.println("La burbuja es null.");
-        return false;
+
+    // Método para verificar si el clic está sobre la burbuja
+    private boolean isTouchingBubble(float touchX, float touchY) {
+        if (bubble == null) {
+            System.out.println("La burbuja es null.");
+            return false;
+        }
+
+        // Obtener la posición de la burbuja
+        Vector2 bubblePos = bubble.getBody().getPosition();
+        float bubbleRadius = 1.5f; // Ajusta esto al tamaño real de la burbuja (debe coincidir con BUBBLE_RADIUS)
+
+        // Calcular la distancia entre el clic y el centro de la burbuja
+        float distance = (float) Math.sqrt(Math.pow(touchX - bubblePos.x, 2) + Math.pow(touchY - bubblePos.y, 2));
+
+        // Mensajes de depuración
+        System.out.println("Posición del clic: (" + touchX + ", " + touchY + ")");
+        System.out.println("Posición de la burbuja: (" + bubblePos.x + ", " + bubblePos.y + ")");
+        System.out.println("Distancia al centro de la burbuja: " + distance);
+
+        // Verificar si el clic está dentro del área de la burbuja
+        boolean isTouching = distance <= bubbleRadius;
+        System.out.println("¿El clic está sobre la burbuja? " + isTouching);
+        return isTouching;
     }
-
-    // Obtener la posición de la burbuja
-    Vector2 bubblePos = bubble.getBody().getPosition();
-    float bubbleRadius = 1.5f; // Ajusta esto al tamaño real de la burbuja (debe coincidir con BUBBLE_RADIUS)
-
-    // Calcular la distancia entre el clic y el centro de la burbuja
-    float distance = (float) Math.sqrt(Math.pow(touchX - bubblePos.x, 2) + Math.pow(touchY - bubblePos.y, 2));
-
-    // Mensajes de depuración
-    System.out.println("Posición del clic: (" + touchX + ", " + touchY + ")");
-    System.out.println("Posición de la burbuja: (" + bubblePos.x + ", " + bubblePos.y + ")");
-    System.out.println("Distancia al centro de la burbuja: " + distance);
-
-    // Verificar si el clic está dentro del área de la burbuja
-    boolean isTouching = distance <= bubbleRadius;
-    System.out.println("¿El clic está sobre la burbuja? " + isTouching);
-    return isTouching;
-}
 
     private boolean isCollidingWithBubble(Fixture fixtureA, Fixture fixtureB) {
         Body bodyA = fixtureA.getBody();
@@ -268,18 +311,22 @@ private boolean isTouchingBubble(float touchX, float touchY) {
     }
 
     private void explodeBubble() {
-        if (bubble != null) {
-            System.out.println("¡La burbuja ha explotado!");
+    if (bubble != null) {
+        System.out.println("¡La burbuja ha explotado!");
 
-            // Destruir la burbuja
-            world.destroyBody(bubble.getBody());
-            bubble.dispose();
-            bubble = null;
+        // Destruir la burbuja
+        world.destroyBody(bubble.getBody());
+        bubble.dispose();
+        bubble = null;
 
-            // Permitir que el dulce caiga
+        // Permitir que el dulce caiga solo si ballBody no es null
+        if (ballBody != null) {
             ballBody.setLinearVelocity(0, -5); // Aplicar una velocidad hacia abajo
+        } else {
+            System.out.println("El dulce ya no existe, no se puede aplicar velocidad.");
         }
     }
+}
 
     private boolean isCollidingWithStar(Fixture fixtureA, Fixture fixtureB) {
         // La lógica de colisión con estrellas ahora se maneja en render()
@@ -307,10 +354,10 @@ private boolean isTouchingBubble(float touchX, float touchY) {
         return false;
     }
 
- private void handleRanaCollision(Body ranaBody) {
+  private void handleRanaCollision(Body ranaBody) {
     if (!collidedRana.contains(ranaBody)) {
         System.out.println("¡La rana se comió el dulce!");
-        bodiesToRemove.add(ballBody); // Marcar el confite para eliminarlo
+        bodiesToRemove.add(ballBody); // Marcar el dulce para eliminarlo
         collidedRana.add(ranaBody);  // Evitar múltiples colisiones
 
         // Liberar recursos del sprite del dulce
@@ -318,9 +365,6 @@ private boolean isTouchingBubble(float touchX, float touchY) {
             boxSprite.getTexture().dispose();
             boxSprite = null;
         }
-
-        // Establecer ballBody en null para evitar usos posteriores
-        ballBody = null;
 
         // Cambiar la textura de la rana
         rana.setEatingTexture();
@@ -332,124 +376,194 @@ private boolean isTouchingBubble(float touchX, float touchY) {
                 rana.setNormalTexture();
             }
         }, 0.09f); // Duración de la animación de comer
+
+        // Destruir la burbuja si existe
+        if (bubble != null) {
+            System.out.println("¡La rana también se comió la burbuja!");
+            world.destroyBody(bubble.getBody());
+            bubble.dispose();
+            bubble = null;
+        }
+
+        // Establecer ballBody en null después de que el dulce haya sido destruido
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                ballBody = null;
+            }
+        }, 0.1f); // Pequeño retraso para asegurar que el cuerpo se haya destruido
     }
 }
 
-   @Override
-public void render(float delta) {
-    // Limpiar la pantalla
-    ScreenUtils.clear(0, 0, 0, 1);
+    @Override
+    public void render(float delta) {
+        // Limpiar la pantalla
+        ScreenUtils.clear(0, 0, 0, 1);
 
-    // Actualizar el mundo de Box2D
-    world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
+        // Actualizar el mundo de Box2D
+        world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
 
-    // Dibujar el debug de Box2D
-    debugRenderer.render(world, camera.combined);
+        // Dibujar el debug de Box2D
+        debugRenderer.render(world, camera.combined);
 
-    // Configurar la matriz de proyección para dibujar sprites
-    batch.setProjectionMatrix(camera.combined);
+        // Configurar la matriz de proyección para dibujar sprites
+        batch.setProjectionMatrix(camera.combined);
 
-    // Dibujar los sprites
-    batch.begin();
+        // Dibujar los sprites
+        batch.begin();
 
-    // Dibujar la burbuja
-    if (bubble != null) {
-        bubble.updateSprite();
-        bubble.getSprite().draw(batch);
+        // Dibujar la burbuja
+        if (bubble != null) {
+            bubble.updateSprite();
+            bubble.getSprite().draw(batch);
 
-        // Si la burbuja está recolectada, mover el dulce junto con la burbuja
-        if (bubble.isCollected() && ballBody != null) {
-            ballBody.setTransform(bubble.getBody().getPosition(), 0);
-            ballBody.setLinearVelocity(0, 2); // Velocidad del dulce (igual a la burbuja)
-        }
-    }
-
-    // Dibujar el dulce solo si ballBody no es null
-    if (ballBody != null && boxSprite != null) {
-        boxSprite.setPosition(
-            ballBody.getPosition().x - boxSprite.getWidth() / 2,
-            ballBody.getPosition().y - boxSprite.getHeight() / 2
-        );
-        boxSprite.setRotation(ballBody.getAngle() * MathUtils.radiansToDegrees);
-        boxSprite.draw(batch);
-    }
-
-    // Dibujar estrellas (si las tienes)
-    for (int i = 0; i < starTextures.length; i++) {
-        if (!starCollected[i]) {
-            batch.draw(starTextures[i], starPositions[i].x - 1, starPositions[i].y - 1, 2, 2);
-        }
-    }
-
-    // Dibujar la rana (si la tienes)
-    if (rana != null) {
-        rana.draw(batch);
-    }
-
-    batch.end();
-
-    // Verificar colisiones con la burbuja
-    if (bubble != null && ballBody != null) {
-        Vector2 bubblePos = bubble.getBody().getPosition();
-        Vector2 ballPos = ballBody.getPosition();
-
-        // Verificar si la burbuja colisiona con el dulce
-        if (bubblePos.dst(ballPos) < 1.0f && !bubble.isCollected()) { // Distancia de colisión
-            handleBubbleCollision(bubble.getBody());
-        }
-    }
-
-    // Verificar colisiones con las estrellas
-    if (ballBody != null) {
-        for (int i = 0; i < starRectangles.length; i++) {
-            if (!starCollected[i] && starRectangles[i].contains(ballBody.getPosition().x, ballBody.getPosition().y)) {
-                handleStarCollision(i); // Recolectar la estrella
+            // Si la burbuja está recolectada, mover el dulce junto con la burbuja
+            if (bubble.isCollected() && ballBody != null) {
+                ballBody.setTransform(bubble.getBody().getPosition(), 0);
+                ballBody.setLinearVelocity(0, 2); // Velocidad del dulce (igual a la burbuja)
             }
         }
-    }
 
-    // Verificar colisión con la rana
-    if (rana != null && ballBody != null) {
-        Vector2 ranaPos = rana.getBody().getPosition();
-        Vector2 ballPos = ballBody.getPosition();
-
-        // Verificar si el dulce colisiona con la rana
-        if (ranaPos.dst(ballPos) < 1.0f) { // Distancia de colisión
-            handleRanaCollision(rana.getBody());
+        // Dibujar el dulce solo si ballBody no es null
+        if (ballBody != null && boxSprite != null) {
+            boxSprite.setPosition(
+                ballBody.getPosition().x - boxSprite.getWidth() / 2,
+                ballBody.getPosition().y - boxSprite.getHeight() / 2
+            );
+            boxSprite.setRotation(ballBody.getAngle() * MathUtils.radiansToDegrees);
+            boxSprite.draw(batch);
         }
+
+        // Dibujar estrellas (si las tienes)
+        for (int i = 0; i < starTextures.length; i++) {
+            if (!starCollected[i]) {
+                batch.draw(starTextures[i], starPositions[i].x - 1, starPositions[i].y - 1, 2, 2);
+            }
+        }
+
+        // Dibujar la rana (si la tienes)
+        if (rana != null) {
+            rana.draw(batch);
+        }
+
+        batch.end();
+
+        // Verificar colisiones con la burbuja
+        if (bubble != null && ballBody != null) {
+            Vector2 bubblePos = bubble.getBody().getPosition();
+            Vector2 ballPos = ballBody.getPosition();
+
+            // Verificar si la burbuja colisiona con el dulce
+            if (bubblePos.dst(ballPos) < 1.0f && !bubble.isCollected()) { // Distancia de colisión
+                handleBubbleCollision(bubble.getBody());
+            }
+        }
+
+        // Verificar colisiones con las estrellas
+        if (ballBody != null) {
+            for (int i = 0; i < starRectangles.length; i++) {
+                if (!starCollected[i] && starRectangles[i].contains(ballBody.getPosition().x, ballBody.getPosition().y)) {
+                    handleStarCollision(i); // Recolectar la estrella
+                }
+            }
+        }
+
+        // Verificar colisión con la rana
+        if (rana != null && ballBody != null) {
+            Vector2 ranaPos = rana.getBody().getPosition();
+            Vector2 ballPos = ballBody.getPosition();
+
+            // Verificar si el dulce colisiona con la rana
+            if (ranaPos.dst(ballPos) < 1.0f) { // Distancia de colisión
+                handleRanaCollision(rana.getBody());
+            }
+        }
+
+        // Verificar clic del usuario para explotar la burbuja
+        if (Gdx.input.justTouched() && bubble != null && bubble.isCollected()) {
+            explodeBubble();
+        }
+
+        // Eliminar cuerpos marcados para eliminación
+        for (Body body : bodiesToRemove) {
+            world.destroyBody(body);
+        }
+        bodiesToRemove.clear();
     }
 
-    // Verificar clic del usuario para explotar la burbuja
-    if (Gdx.input.justTouched() && bubble != null && bubble.isCollected()) {
-        explodeBubble();
-    }
-
-    // Eliminar cuerpos marcados para eliminación
-    for (Body body : bodiesToRemove) {
-        world.destroyBody(body);
-    }
-    bodiesToRemove.clear();
-}
-
-    private boolean isTouchingRope(float touchX, float touchY) {
+ 
+    
+    private int getTouchedRope(float touchX, float touchY) {
     // Verificar si ballBody es null
     if (ballBody == null) {
-        return false;
+        return -1; // No hay cuerda tocada
     }
 
-    // Obtener las posiciones de los cuerpos conectados por la cuerda
+    // Obtener la posición del dulce
     Vector2 ballPosition = ballBody.getPosition();
-    Vector2 boxPosition = bodyBox.getPosition();
 
     // Hasta donde se acepta que se tocó la cuerda
     float tolerance = 0.5f;
 
-    // Verificar si el clic está dentro del rango de la cuerda - entre el dulce y la caja
-    return (touchX > Math.min(ballPosition.x, boxPosition.x) - tolerance
-            && touchX < Math.max(ballPosition.x, boxPosition.x) + tolerance
-            && touchY > Math.min(ballPosition.y, boxPosition.y) - tolerance
-            && touchY < Math.max(ballPosition.y, boxPosition.y) + tolerance);
+    // Verificar si el clic está cerca de la cuerda 1 (entre ballBody y bodyBox)
+    if (distanceJoint != null) {
+        Vector2 boxPosition = bodyBox.getPosition();
+        if (isPointNearLine(touchX, touchY, ballPosition.x, ballPosition.y, boxPosition.x, boxPosition.y, tolerance)) {
+            return 1; // Cuerda 1 tocada
+        }
+    }
+
+    // Verificar si el clic está cerca de la cuerda 2 (entre ballBody y leftAnchorBody)
+    if (distanceJoint2 != null) {
+        Vector2 leftAnchorPosition = distanceJoint2.getBodyB().getPosition();
+        if (isPointNearLine(touchX, touchY, ballPosition.x, ballPosition.y, leftAnchorPosition.x, leftAnchorPosition.y, tolerance)) {
+            return 2; // Cuerda 2 tocada
+        }
+    }
+
+    // Verificar si el clic está cerca de la cuerda 3 (entre ballBody y rightAnchorBody)
+    if (distanceJoint3 != null) {
+        Vector2 rightAnchorPosition = distanceJoint3.getBodyB().getPosition();
+        if (isPointNearLine(touchX, touchY, ballPosition.x, ballPosition.y, rightAnchorPosition.x, rightAnchorPosition.y, tolerance)) {
+            return 3; // Cuerda 3 tocada
+        }
+    }
+
+    return -1; // No se tocó ninguna cuerda
 }
+
+// Método auxiliar para verificar si un punto está cerca de una línea
+private boolean isPointNearLine(float px, float py, float x1, float y1, float x2, float y2, float tolerance) {
+    // Calcular la distancia del punto a la línea
+    float A = px - x1;
+    float B = py - y1;
+    float C = x2 - x1;
+    float D = y2 - y1;
+
+    float dot = A * C + B * D;
+    float lenSq = C * C + D * D;
+    float param = (lenSq != 0) ? dot / lenSq : -1;
+
+    float xx, yy;
+
+    if (param < 0) {
+        xx = x1;
+        yy = y1;
+    } else if (param > 1) {
+        xx = x2;
+        yy = y2;
+    } else {
+        xx = x1 + param * C;
+        yy = y1 + param * D;
+    }
+
+    float dx = px - xx;
+    float dy = py - yy;
+    float distance = (float) Math.sqrt(dx * dx + dy * dy);
+
+    return distance <= tolerance;
+}
+
     @Override
     public void resize(int width, int height) {
         camera.viewportWidth = width / PIXELS_TO_METER;

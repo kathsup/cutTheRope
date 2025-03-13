@@ -1,5 +1,6 @@
 package com.rope.Game;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
@@ -33,6 +34,8 @@ import java.util.Set;
 
 
 public class Nivel1 implements Screen{
+    
+    
 
     
     private World world;
@@ -64,6 +67,12 @@ public class Nivel1 implements Screen{
     private DistanceJoint distanceJoint;
     private int puntos = 0;
 
+    
+    
+
+    
+
+    
     @Override
     public void show() {
         batch = new SpriteBatch();
@@ -202,7 +211,7 @@ public class Nivel1 implements Screen{
 }
     
    @Override
-public void render(float delta) {
+    public void render(float delta) {
     // Limpiar la pantalla
     ScreenUtils.clear(0, 0, 0, 1);
 
