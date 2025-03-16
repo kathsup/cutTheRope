@@ -1,7 +1,4 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
+
 package com.rope.Game;
 
 import com.badlogic.gdx.Gdx;
@@ -35,11 +32,7 @@ import com.badlogic.gdx.utils.Timer;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- *
- * @author Lenovo
- */
-public class Nivel5 implements Screen {
+public class Nivel5 extends NivelBase implements Screen {
 
     private World world;
     private Box2DDebugRenderer debugRenderer;
@@ -71,9 +64,19 @@ public class Nivel5 implements Screen {
 
     private DistanceJoint distanceJoint, distanceJoint2;
     private int puntos = 0;
+     private main game;  // Referencia al objeto game para manejar el estado global del juego
+
+    // Constructor que acepta game
+    public Nivel5(main game) {
+        this.game = game;  // Guardar la referencia de game para usar en todo el nivel
+    }
 
     @Override
     public void show() {
+        super.show(); 
+       // setNiveles(main.getInstance().getNiveles());
+        System.out.println("Cámara inicializada: " + (camera != null));
+        
         batch = new SpriteBatch();
         bodiesToRemove = new Array<Body>();
 
@@ -89,9 +92,9 @@ public class Nivel5 implements Screen {
 
                 if (isCollidingWithStar(fixtureA, fixtureB)) {
                     // Lógica de colisión con estrellas
-                } else if (isCollidingWithRana(fixtureA, fixtureB)) {
+                } /*else if (isCollidingWithRana(fixtureA, fixtureB)) {
                     handleRanaCollision(rana.getBody());
-                }
+                }*/
             }
 
             @Override
@@ -239,6 +242,7 @@ public class Nivel5 implements Screen {
     private void handleStarCollision(int starIndex) {
         if (!collidedStars.contains(starIndex)) {
             puntos += 1;
+            estrellasRecolectadas += 1;
             System.out.println("¡Colisión con estrella! Puntos: " + puntos);
             collidedStars.add(starIndex);
             starCollected[starIndex] = true; // Marcar la estrella como recolectada
@@ -257,7 +261,7 @@ public class Nivel5 implements Screen {
         return false;
     }
 
-    private void handleRanaCollision(Body ranaBody) {
+   /* private void handleRanaCollision(Body ranaBody) {
         if (!collidedRana.contains(ranaBody)) {
             System.out.println("¡La rana se comió el dulce!");
             bodiesToRemove.add(ballBody); // Marcar el dulce para eliminarlo
@@ -288,12 +292,13 @@ public class Nivel5 implements Screen {
                 }
             }, 0.1f); // Pequeño retraso para asegurar que el cuerpo se haya destruido
         }
-    }
+    }*/
 
     @Override
     public void render(float delta) {
         // Limpiar la pantalla
         ScreenUtils.clear(0, 0, 0, 1);
+        super.render(delta);
 
         // Actualizar el mundo de Box2D
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
@@ -346,9 +351,9 @@ public class Nivel5 implements Screen {
             Vector2 ballPos = ballBody.getPosition();
 
             // Verificar si el dulce colisiona con la rana
-            if (ranaPos.dst(ballPos) < 1.0f) { // Distancia de colisión
-                handleRanaCollision(rana.getBody());
-            }
+            //if (ranaPos.dst(ballPos) < 1.0f) { // Distancia de colisión
+               //handleRanaCollision(rana.getBody());
+            //}
         }
 
         // Eliminar cuerpos marcados para eliminación
@@ -476,5 +481,73 @@ public class Nivel5 implements Screen {
             batch.dispose();
         }
 
+    }
+
+    @Override
+    public void verificarCondicionesVictoria() {
+        if (ballBody != null && rana != null) {
+        Vector2 ranaPos = rana.getBody().getPosition();
+        Vector2 ballPos = ballBody.getPosition();
+
+        // Verificar si el dulce colisiona con la rana
+        if (ranaPos.dst(ballPos) < 2.0f && estrellasRecolectadas >= 1) { // Distancia de colisión
+            System.out.println("¡La rana se comió el dulce!");
+
+            // Evitar múltiples colisiones
+            if (!collidedRana.contains(rana.getBody())) {
+                collidedRana.add(rana.getBody());
+
+                // Marcar el dulce para eliminarlo
+                bodiesToRemove.add(ballBody);
+
+                // Liberar recursos del sprite del dulce
+                if (boxSprite != null) {
+                    boxSprite.getTexture().dispose();
+                    boxSprite = null;
+                }
+
+                // Cambiar la textura de la rana a la de comer
+                rana.setEatingTexture();
+
+                // Programar un retraso para volver a la textura normal
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        rana.setNormalTexture();
+                    }
+                }, 0.09f); // Duración de la animación de comer
+
+                // Destruir el cuerpo del dulce después del retraso
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        ballBody = null;
+                    }
+                }, 0.1f); // Pequeño retraso para asegurar que el cuerpo se haya destruido
+
+                // Marcar el nivel como completado
+                nivelCompletado = true;
+                System.out.println("¡Nivel completado!");
+            }
+        }
+    }
+    }
+
+    @Override
+    public void manejarVictoria() {
+        mostrarCuadroVictoria(); 
+    }
+
+    @Override
+    public void verificarCondicionesPerdida() {
+        if (ballBody != null && (ballBody.getPosition().y < -15 || ballBody.getPosition().y > 18)) { 
+            perderNivel();
+        }
+    }
+
+    @Override
+    protected void reiniciarNivel() {
+         System.out.println("Reiniciando Nivel 5...");
+        mostrarCuadroVictoria();// Recargar la pantalla del nivel 1
     }
 }

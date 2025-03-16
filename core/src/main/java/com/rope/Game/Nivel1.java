@@ -33,11 +33,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class Nivel1 implements Screen{
-    
-    
-
-    
+public class Nivel1 extends NivelBase implements Screen{
     private World world;
     private Box2DDebugRenderer debugRenderer;
     private OrthographicCamera camera;
@@ -66,15 +62,17 @@ public class Nivel1 implements Screen{
 
     private DistanceJoint distanceJoint;
     private int puntos = 0;
+    private main game;  // Referencia al objeto game para manejar el estado global del juego
 
-    
-    
+    // Constructor que acepta game
+    public Nivel1(main game) {
+        this.game = game;  // Guardar la referencia de game para usar en todo el nivel
+    }
 
-    
-
-    
     @Override
     public void show() {
+        super.show(); 
+        System.out.println("Cámara inicializada: " + (camera != null));
         batch = new SpriteBatch();
         bodiesToRemove = new Array<Body>();
 
@@ -170,6 +168,8 @@ public class Nivel1 implements Screen{
     private void handleStarCollision(int starIndex) {
         if (!collidedStars.contains(starIndex)) {
             puntos += 1;
+            estrellasRecolectadas += 1; 
+            
             System.out.println("¡Colision con estrella! Puntos: " + puntos);
             collidedStars.add(starIndex);
             starCollected[starIndex] = true;
@@ -214,7 +214,7 @@ public class Nivel1 implements Screen{
     public void render(float delta) {
     // Limpiar la pantalla
     ScreenUtils.clear(0, 0, 0, 1);
-
+    super.render(delta);
     // Actualizar el mundo de Box2D
     world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
 
@@ -367,5 +367,38 @@ private boolean isTouchingRope(float touchX, float touchY) {
     if (batch != null) {
         batch.dispose();
     }
+    }
+
+    @Override
+    public void verificarCondicionesVictoria() {
+        if (dulce == null && estrellasRecolectadas >= 1) {
+            nivelCompletado = true;
+            System.out.println("¡Nivel 1 completado!");
+        }
+    }
+
+    @Override
+    public void manejarVictoria() {
+        mostrarCuadroVictoria();
+        
+        if (game != null && game.getScreen() instanceof mapa) {
+        game.desbloquearNivel(1);  // Desbloquear el Nivel 2 (índice 1)
+    }
+    }
+
+    @Override
+    public void verificarCondicionesPerdida() {
+        if (dulce != null && dulce.getBody().getPosition().y < -18) {  // Si el dulce cae debajo de y = -10
+            perderNivel();  // Llamar al método perderNivel() si se cumple la condición de pérdida
+        }
+    }
+
+    
+    @Override
+    protected void reiniciarNivel() {
+        
+        System.out.println("Reiniciando Nivel 1...");
+        //((Game) Gdx.app.getApplicationListener()).setScreen(new Nivel1());  // Recargar la pantalla del nivel 1
+        mostrarCuadroDerrota();
     }
 }

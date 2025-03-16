@@ -1,5 +1,6 @@
 package com.rope.Game;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
@@ -31,7 +32,7 @@ import com.badlogic.gdx.utils.Timer;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Nivel2 implements Screen {
+public class Nivel2 extends NivelBase implements Screen {
 
     private World world;
     private Box2DDebugRenderer debugRenderer;
@@ -65,9 +66,22 @@ public class Nivel2 implements Screen {
 
     private DistanceJoint distanceJoint;
     private int puntos = 0;
+    private main game;  // Referencia al objeto game para manejar el estado global del juego
 
+    // Constructor que acepta game
+    public Nivel2(main game) {
+        this.game = game;  // Guardar la referencia de game para usar en todo el nivel
+    }
+   
+    
+    
     @Override
     public void show() {
+        
+        super.show(); 
+        
+       // setNiveles(main.getInstance().getNiveles());
+        System.out.println("Cámara inicializada: " + (camera != null));
         batch = new SpriteBatch();
         bodiesToRemove = new Array<Body>();
 
@@ -86,9 +100,9 @@ public class Nivel2 implements Screen {
                 // Verificar si el dulce (ballBody) está involucrado en la colisión con una estrella
                 if (isCollidingWithStar(fixtureA, fixtureB)) {
                     // La lógica de colisión con estrellas ahora se maneja en render()
-                } else if (isCollidingWithRana(fixtureA, fixtureB)) {
-                    handleRanaCollision(rana.getBody());
-                } else if (isCollidingWithBubble(fixtureA, fixtureB)) {
+                } //else if (isCollidingWithRana(fixtureA, fixtureB)) {
+                    //handleRanaCollision(rana.getBody());
+                /*}*/ else if (isCollidingWithBubble(fixtureA, fixtureB)) {
                     handleBubbleCollision(bubble.getBody());
                 }
             }
@@ -241,6 +255,10 @@ private boolean isTouchingBubble(float touchX, float touchY) {
 }
 
     private boolean isCollidingWithBubble(Fixture fixtureA, Fixture fixtureB) {
+        if (bubble == null) {
+        return false; // Si la burbuja es null, no hay colisión
+    }
+        
         Body bodyA = fixtureA.getBody();
         Body bodyB = fixtureB.getBody();
 
@@ -289,6 +307,7 @@ private boolean isTouchingBubble(float touchX, float touchY) {
     private void handleStarCollision(int starIndex) {
         if (!collidedStars.contains(starIndex)) {
             puntos += 1;
+            estrellasRecolectadas += 1; 
             System.out.println("¡Colisión con estrella! Puntos: " + puntos);
             collidedStars.add(starIndex);
             starCollected[starIndex] = true; // Marcar la estrella como recolectada
@@ -307,7 +326,7 @@ private boolean isTouchingBubble(float touchX, float touchY) {
         return false;
     }
 
- private void handleRanaCollision(Body ranaBody) {
+ /*private void handleRanaCollision(Body ranaBody) {
     if (!collidedRana.contains(ranaBody)) {
         System.out.println("¡La rana se comió el dulce!");
         bodiesToRemove.add(ballBody); // Marcar el confite para eliminarlo
@@ -333,12 +352,13 @@ private boolean isTouchingBubble(float touchX, float touchY) {
             }
         }, 0.09f); // Duración de la animación de comer
     }
-}
+}*/
 
    @Override
 public void render(float delta) {
     // Limpiar la pantalla
     ScreenUtils.clear(0, 0, 0, 1);
+    super.render(delta);
 
     // Actualizar el mundo de Box2D
     world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
@@ -414,9 +434,12 @@ public void render(float delta) {
         Vector2 ballPos = ballBody.getPosition();
 
         // Verificar si el dulce colisiona con la rana
-        if (ranaPos.dst(ballPos) < 1.0f) { // Distancia de colisión
-            handleRanaCollision(rana.getBody());
-        }
+        //if (ranaPos.dst(ballPos) < 1.0f) { // Distancia de colisión
+          //  handleRanaCollision(rana.getBody());
+        //}
+        
+        
+        
     }
 
     // Verificar clic del usuario para explotar la burbuja
@@ -510,4 +533,65 @@ public void render(float delta) {
             bubble.dispose();
         }
     }
+
+    @Override
+    public void verificarCondicionesVictoria() {
+        if (ballBody != null && rana != null) {
+        Vector2 ranaPos = rana.getBody().getPosition();
+        Vector2 ballPos = ballBody.getPosition();
+
+        // Verificar si el dulce colisiona con la rana
+        if (ranaPos.dst(ballPos) < 2.0f && estrellasRecolectadas >= 1) { // Distancia de colisión
+            System.out.println("¡La rana se comió el dulce!");
+            
+            // Liberar recursos del sprite del dulce
+            if (boxSprite != null) {
+                boxSprite.getTexture().dispose();
+                boxSprite = null;
+            }
+            
+            world.destroyBody(ballBody);
+            ballBody = null; // Marcar el dulce como comido
+            nivelCompletado = true;
+            System.out.println("¡Nivel 2 completado!");
+            
+            // Cambiar la textura de la rana
+            rana.setEatingTexture();
+
+            // Programar un retraso para volver a la textura normal
+            Timer.schedule(new Timer.Task() {
+                @Override
+                public void run() {
+                    rana.setNormalTexture();
+                }
+            }, 0.09f); // Duración de la animación de comer
+        }
+    }
+    }
+
+    @Override
+    public void manejarVictoria() {
+        mostrarCuadroVictoria();
+        if (game != null && game.getScreen() instanceof mapa) {
+        game.desbloquearNivel(2);  // Desbloquear el Nivel 2 (índice 1)
+    }
+    }
+
+    @Override
+    public void verificarCondicionesPerdida() {
+        if (ballBody != null && (ballBody.getPosition().y < -15 || ballBody.getPosition().y > 18)) { // Ajusta los límites según sea necesario
+        perderNivel();
+    }
+    }
+
+    @Override
+    protected void reiniciarNivel() {
+        
+        //System.out.println("Reiniciando Nivel 2...");
+        mostrarCuadroDerrota();// Recargar la pantalla del nivel 1
+        
+        
+  
+    }
+    
 }
