@@ -541,13 +541,21 @@ public class Nivel5 extends NivelBase implements Screen {
     @Override
     public void verificarCondicionesPerdida() {
         if (ballBody != null && (ballBody.getPosition().y < -15 || ballBody.getPosition().y > 18)) { 
+
            perderNivel();
+
+            perderNivel();
+
         }
     }
 
     @Override
     protected void reiniciarNivel() {
          System.out.println("Reiniciando Nivel 5...");
+
         mostrarCuadroDerrota();// Recargar la pantalla del nivel 1
+
+        mostrarCuadroVictoria();// Recargar la pantalla del nivel 1
+
     }
 }

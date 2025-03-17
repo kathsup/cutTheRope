@@ -20,6 +20,9 @@ import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.sun.tools.javac.Main;
 
+import com.badlogic.gdx.Screen;
+
+
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
  * platforms.
@@ -32,7 +35,11 @@ public class main extends Game{
     @Override
     public void create() {
         nivelesDesbloqueados = new boolean[]{true, false, false, false, false};  // Solo el nivel 1 está desbloqueado al inicio
+
         setScreen(new mapa(this));  // Mostrar el mapa
+
+        setScreen(new MenuInicio(this));  // Mostrar el mapa
+
     }
 
     // Método para desbloquear un nivel
