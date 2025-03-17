@@ -1,0 +1,12 @@
+{
+  "com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle": {
+    "default": {
+      "up": "boton"
+    }
+  },
+  "com.badlogic.gdx.graphics.g2d.TextureRegion": {
+    "boton": {
+      "texture": "boton.png"
+    }
+  }
+}
