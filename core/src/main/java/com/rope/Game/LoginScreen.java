@@ -95,19 +95,25 @@ public class LoginScreen implements Screen {
         });
     }
 
-    // Método para manejar el inicio de sesión
     private void iniciarSesion() {
-        String usuario = campoUsuario.getText();
+        String nombreUsuario = campoUsuario.getText();
         String contrasena = campoContrasena.getText();
 
-        // Cargar el usuario desde el archivo
-        Usuario usuarioCargado = Usuario.cargarUsuario(usuario);
-
-        // Validar el inicio de sesión
-        if (usuarioCargado != null && usuarioCargado.getContrasena().equals(contrasena)) {
+        // Verificar la contraseña
+        if (Usuario.verificarContrasena(nombreUsuario, contrasena)) {
             System.out.println("Inicio de sesión exitoso");
-            // Cambiar a la pantalla del mapa o menú principal
-            game.setScreen(new mapa(game)); // Cambiar a la pantalla del mapa
+
+            // Cargar el usuario y establecerlo como logueado
+            Usuario usuario = Usuario.cargarUsuario(nombreUsuario);
+            if (usuario != null) {
+                usuario.iniciarSesion(contrasena); // Establecer el usuario logueado
+                System.out.println("Usuario logueado: " + Usuario.getUsuarioLogueado().getNombreUsuario());
+
+                // Cambiar a la pantalla del mapa o menú principal
+                game.setScreen(new mapa(game)); // Cambiar a la pantalla del mapa
+            } else {
+                System.out.println("Error al cargar el usuario.");
+            }
         } else {
             System.out.println("Usuario o contraseña incorrectos");
         }

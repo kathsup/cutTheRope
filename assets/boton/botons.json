@@ -8,5 +8,10 @@
       "boton": {
         "texture": "boton.png"
       }
+    },
+    "com.badlogic.gdx.graphics.g2d.TextureRegion": {
+      "boton": {
+        "texture": "Settings.png"
+      }
     }
   }
