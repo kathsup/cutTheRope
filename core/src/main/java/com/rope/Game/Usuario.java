@@ -13,9 +13,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Usuario implements Serializable {
+public class Usuario{
 
-    private static final long serialVersionUID = 1L;
+    private static Usuario usuarioLogueado;
 
     // Datos del usuario
     private String nombreUsuario; // Identificador único
@@ -148,11 +148,29 @@ public class Usuario implements Serializable {
     public void agregarPartida(String partida) {
         this.historialPartidas.add(partida);
     }
+    
+    public boolean iniciarSesion(String contrasena) {
+        if (this.contrasena.equals(contrasena)) {
+            Usuario.usuarioLogueado = this; 
+            return true;
+        }
+        return false;
+    }
+    
+    public static void cerrarSesion() {
+        Usuario.usuarioLogueado = null; 
+    }
 
-    // Método para guardar el usuario en un archivo binario usando RandomAccessFile
+    public static Usuario getUsuarioLogueado() {
+        return Usuario.usuarioLogueado;
+    }
+
+
     public void guardarUsuario() {
-        // Nombre de la carpeta directamente
-        String rutaCarpeta = "C:/Users/Lenovo/Desktop/gameRope/usuarios/" + nombreUsuario + "/";
+        // Ruta absoluta fija
+        String rutaBase = "C:/Users/fdhg0/Documents/NetBeansProjects/cutTheRope-master/usuarios/";
+        String rutaCarpeta = rutaBase + nombreUsuario + "/";
+
         File carpeta = new File(rutaCarpeta);
 
         // Crear la carpeta si no existe
@@ -205,8 +223,10 @@ public class Usuario implements Serializable {
 
     // Método para cargar un usuario desde un archivo binario usando RandomAccessFile
     public static Usuario cargarUsuario(String nombreUsuario) {
-        // Nombre de la carpeta directamente
-        String rutaCarpeta = "C:/Users/Lenovo/Desktop/gameRope/usuarios/" + nombreUsuario + "/";
+        // Ruta absoluta fija
+        String rutaBase = "C:/Users/fdhg0/Documents/NetBeansProjects/cutTheRope-master/usuarios/";
+        String rutaCarpeta = rutaBase + nombreUsuario + "/";
+
         String rutaArchivo = rutaCarpeta + "datos_usuario.dat";
         File archivo = new File(rutaArchivo);
 
@@ -220,8 +240,9 @@ public class Usuario implements Serializable {
 
         try (RandomAccessFile raf = new RandomAccessFile(archivo, "r")) {
             // Leer datos del archivo
-            String contrasena = raf.readUTF();
             String nombreCompleto = raf.readUTF();
+            String contrasena = raf.readUTF();
+
             Date fechaRegistro = new Date(raf.readLong());
             Date ultimaSesion = new Date(raf.readLong());
             int progresoJuego = raf.readInt();
@@ -264,6 +285,36 @@ public class Usuario implements Serializable {
             System.out.println("Error al cargar el usuario:");
             e.printStackTrace();
             return null;
+        }
+    }
+
+    public static boolean verificarContrasena(String nombreUsuario, String contrasena) {
+        // Ruta absoluta hacia la carpeta usuarios
+        String rutaBase = "C:/Users/fdhg0/Documents/NetBeansProjects/cutTheRope-master/usuarios/";
+        String rutaArchivo = rutaBase + nombreUsuario + "/datos_usuario.dat";
+        File archivo = new File(rutaArchivo);
+
+        // Verificar si el archivo existe
+        if (!archivo.exists()) {
+            System.out.println("El archivo no existe: " + rutaArchivo);
+            return false;
+        }
+
+        System.out.println("Verificando contraseña desde: " + rutaArchivo);
+
+        try (RandomAccessFile raf = new RandomAccessFile(archivo, "r")) {
+            // Leer el nombre de usuario (lo ignoramos)
+            raf.readUTF();
+
+            // Leer la contraseña
+            String contrasenaArchivo = raf.readUTF();
+
+            // Verificar si la contraseña coincide
+            return contrasenaArchivo.equals(contrasena);
+        } catch (IOException e) {
+            System.out.println("Error al verificar la contraseña:");
+            e.printStackTrace();
+            return false;
         }
     }
 }
