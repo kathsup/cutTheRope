@@ -58,7 +58,7 @@ public class SettingsScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Preferencias presionado");
                 // Aquí puedes cambiar a la pantalla de Preferencias
-                // game.setScreen(new PreferenciasScreen(game));
+                 game.setScreen(new AjustesScreen(game));
             }
         });
 

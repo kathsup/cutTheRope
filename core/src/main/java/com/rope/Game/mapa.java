@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 
 public class mapa implements Screen {
+    
 
     private main game;
     private SpriteBatch batch;

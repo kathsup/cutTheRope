@@ -21,7 +21,8 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.sun.tools.javac.Main;
 
 import com.badlogic.gdx.Screen;
-import musica.Musica;
+import com.badlogic.gdx.audio.Music;
+
 
 
 /**
@@ -33,6 +34,8 @@ public class main extends Game{
     public static main instance; 
     public boolean[] nivelesDesbloqueados;
     //private Musica musicaFondo; // Instancia de Musica
+    private Music musica; 
+    public boolean sonidoActivado = true;
 
     @Override
     public void create() {
@@ -41,10 +44,27 @@ public class main extends Game{
         //musicaFondo = new Musica("musicaproyecto.mp3");
         //musicaFondo.reproducir(); // Iniciar la reproducción
 
-        setScreen(new mapa(this));  // Mostrar el mapa
+        //setScreen(new mapa(this));  // Mostrar el mapa
+        musica = Gdx.audio.newMusic(Gdx.files.internal("musica.mp3"));
+         musica.setLooping(true);
+        musica.setVolume(0.5f);
+         if (sonidoActivado) {
+            musica.play();
+        }
+        setScreen(new MenuInicio(this));  // Mostrar el mapa
+        
 
-        //setScreen(new MenuInicio(this));  // Mostrar el mapa
+    }
+    
+    public void alternarSonido() {
+        sonidoActivado = !sonidoActivado;
 
+        
+        if (sonidoActivado) {
+            musica.play();
+        } else {
+            musica.pause(); 
+        }
     }
 
     // Método para desbloquear un nivel
@@ -63,6 +83,9 @@ public class main extends Game{
     @Override
     public void dispose() {
         super.dispose();
+        if (musica != null) {
+            musica.dispose();
+        }
         
     }
     

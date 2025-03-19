@@ -168,7 +168,7 @@ public class Usuario{
 
     public void guardarUsuario() {
         // Ruta absoluta fija
-        String rutaBase = "C:/Users/fdhg0/Documents/NetBeansProjects/cutTheRope-master/usuarios/";
+        String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";
         String rutaCarpeta = rutaBase + nombreUsuario + "/";
 
         File carpeta = new File(rutaCarpeta);
@@ -224,7 +224,7 @@ public class Usuario{
     // Método para cargar un usuario desde un archivo binario usando RandomAccessFile
     public static Usuario cargarUsuario(String nombreUsuario) {
         // Ruta absoluta fija
-        String rutaBase = "C:/Users/fdhg0/Documents/NetBeansProjects/cutTheRope-master/usuarios/";
+        String rutaBase = "C:/Users/Lenovo/Desktop/gameRope/usuarios";
         String rutaCarpeta = rutaBase + nombreUsuario + "/";
 
         String rutaArchivo = rutaCarpeta + "datos_usuario.dat";
@@ -290,7 +290,7 @@ public class Usuario{
 
     public static boolean verificarContrasena(String nombreUsuario, String contrasena) {
         // Ruta absoluta hacia la carpeta usuarios
-        String rutaBase = "C:/Users/fdhg0/Documents/NetBeansProjects/cutTheRope-master/usuarios/";
+        String rutaBase = "C:/Users/Lenovo/Desktop/gameRope/usuarios";
         String rutaArchivo = rutaBase + nombreUsuario + "/datos_usuario.dat";
         File archivo = new File(rutaArchivo);
 
