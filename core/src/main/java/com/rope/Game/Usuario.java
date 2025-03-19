@@ -152,7 +152,7 @@ public class Usuario implements Serializable {
     // Método para guardar el usuario en un archivo binario usando RandomAccessFile
     public void guardarUsuario() {
         // Nombre de la carpeta directamente
-        String rutaCarpeta = "usuarios/" + nombreUsuario + "/";
+        String rutaCarpeta = "C:/Users/Lenovo/Desktop/gameRope/usuarios/" + nombreUsuario + "/";
         File carpeta = new File(rutaCarpeta);
 
         // Crear la carpeta si no existe
@@ -206,7 +206,7 @@ public class Usuario implements Serializable {
     // Método para cargar un usuario desde un archivo binario usando RandomAccessFile
     public static Usuario cargarUsuario(String nombreUsuario) {
         // Nombre de la carpeta directamente
-        String rutaCarpeta = "usuarios/" + nombreUsuario + "/";
+        String rutaCarpeta = "C:/Users/Lenovo/Desktop/gameRope/usuarios/" + nombreUsuario + "/";
         String rutaArchivo = rutaCarpeta + "datos_usuario.dat";
         File archivo = new File(rutaArchivo);
 

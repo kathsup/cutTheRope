@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.sun.tools.javac.Main;
 
 import com.badlogic.gdx.Screen;
+import musica.Musica;
 
 
 /**
@@ -31,14 +32,18 @@ public class main extends Game{
     private Screen[] niveles;
     public static main instance; 
     public boolean[] nivelesDesbloqueados;
+    //private Musica musicaFondo; // Instancia de Musica
 
     @Override
     public void create() {
         nivelesDesbloqueados = new boolean[]{true, false, false, false, false};  // Solo el nivel 1 está desbloqueado al inicio
+        
+        //musicaFondo = new Musica("musicaproyecto.mp3");
+        //musicaFondo.reproducir(); // Iniciar la reproducción
 
         setScreen(new mapa(this));  // Mostrar el mapa
 
-        setScreen(new MenuInicio(this));  // Mostrar el mapa
+        //setScreen(new MenuInicio(this));  // Mostrar el mapa
 
     }
 
@@ -55,5 +60,10 @@ public class main extends Game{
         return nivelesDesbloqueados;
     }
 
+    @Override
+    public void dispose() {
+        super.dispose();
+        
+    }
     
 }
