@@ -14,8 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 public class Usuario{
-
-    private static Usuario usuarioLogueado;
+ private static Usuario usuarioLogueado;
 
     // Datos del usuario
     private String nombreUsuario; // Identificador único

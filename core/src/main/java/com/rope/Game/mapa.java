@@ -61,6 +61,7 @@ public void render(float delta) {
 
     // Obtener los niveles desbloqueados desde game
     boolean[] nivelesDesbloqueados = game.getNivelesDesbloqueados();
+    
 
     // Dibujar los botones de los niveles
     batch.draw(nivelesDesbloqueados[0] ? btnNivel1 : btnNivelBloqueado, posBtnNivel1.x, posBtnNivel1.y, btnWidth, btnHeight);

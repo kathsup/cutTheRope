@@ -85,7 +85,7 @@ public class SettingsScreen implements Screen {
             public void clicked(InputEvent event, float x, float y) {
                 System.out.println("Estadísticas presionado");
                 // Aquí puedes cambiar a la pantalla de Estadísticas
-                // game.setScreen(new EstadisticasScreen(game));
+                 game.setScreen(new Estadisticas(game));
             }
         });
 

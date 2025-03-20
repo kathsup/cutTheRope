@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class CrearCuentaScreen implements Screen {
 
-    private Stage stage;
+   private Stage stage;
     private TextField campoUsuario;
     private TextField campoContrasena;
     private TextField campoNombreCompleto;

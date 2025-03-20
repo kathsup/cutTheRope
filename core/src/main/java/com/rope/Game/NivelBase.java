@@ -139,23 +139,23 @@ public abstract class NivelBase implements Screen {
     }*/
     
     protected void regresarAlMapa() {
-    if (!mapaLlamado) {
-        System.out.println("Regresando al mapa...");
-        
-        // Verificar si el nivel actual está completado
-        if (nivelCompletado) {
-            // Desbloquear el siguiente nivel
-            if (game != null) {
-                // Determinar el índice del nivel actual basado en la clase del nivel
-                int nivelActual = obtenerIndiceNivelActual();
-                game.desbloquearNivel(nivelActual); // Desbloquear el siguiente nivel
+        if (!mapaLlamado) {
+            System.out.println("Regresando al mapa...");
+
+            // Verificar si el nivel actual está completado
+            if (nivelCompletado) {
+                // Desbloquear el siguiente nivel
+                if (game != null) {
+                    // Determinar el índice del nivel actual basado en la clase del nivel
+                    int nivelActual = obtenerIndiceNivelActual();
+                    game.desbloquearNivel(nivelActual); // Desbloquear el siguiente nivel
+                }
             }
+
+            game.setScreen(new mapa(game));
+            mapaLlamado = true;
         }
-        
-        game.setScreen(new mapa(game));
-        mapaLlamado = true;
     }
-}
 
 // Método auxiliar para obtener el índice del nivel actual
 private int obtenerIndiceNivelActual() {
