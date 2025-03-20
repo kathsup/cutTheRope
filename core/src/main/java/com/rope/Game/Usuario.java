@@ -1,25 +1,17 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.rope.Game;
 
-/**
- *
- * @author fdhg0
- */
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Usuario{
+public class Usuario {
 
     private static Usuario usuarioLogueado;
 
     // Datos del usuario
-    private String nombreUsuario; // Identificador único
-    private String contrasena; // Almacenada de manera segura (encriptada en un caso real)
+    private String nombreUsuario;
+    private String contrasena;
     private String nombreCompleto;
     private Date fechaRegistro;
     private Date ultimaSesion;
@@ -27,24 +19,24 @@ public class Usuario{
     private int puntajeMaximo;
     private long tiempoTotalJugado; // En segundos
     private List<String> historialPartidas; // Registro de partidas
-    private Preferencias preferencias; // Preferencias de juego
     private String avatar; // Ruta de la imagen de perfil
     private int ranking; // Puntuación general
+    private String idioma; // Idioma preferido
 
     // Constructor
     public Usuario(String nombreUsuario, String contrasena, String nombreCompleto) {
         this.nombreUsuario = nombreUsuario;
         this.contrasena = contrasena;
         this.nombreCompleto = nombreCompleto;
-        this.fechaRegistro = new Date();
-        this.ultimaSesion = new Date();
-        this.progresoJuego = 0;
-        this.puntajeMaximo = 0;
-        this.tiempoTotalJugado = 0;
-        this.historialPartidas = new ArrayList<>();
-        this.preferencias = new Preferencias();
-        this.avatar = "default_avatar.png"; // Ruta por defecto
-        this.ranking = 0;
+        this.fechaRegistro = new Date(); // Fecha actual
+        this.ultimaSesion = new Date(); // Fecha actual
+        this.progresoJuego = 0; // Valor predeterminado
+        this.puntajeMaximo = 0; // Valor predeterminado
+        this.tiempoTotalJugado = 0; // Valor predeterminado
+        this.historialPartidas = new ArrayList<>(); // Lista vacía
+        this.avatar = "anonimo.png"; // Valor predeterminado
+        this.ranking = 0; // Valor predeterminado
+        this.idioma = "es"; // Valor predeterminado
     }
 
     // Getters y Setters
@@ -120,14 +112,6 @@ public class Usuario{
         this.historialPartidas = historialPartidas;
     }
 
-    public Preferencias getPreferencias() {
-        return preferencias;
-    }
-
-    public void setPreferencias(Preferencias preferencias) {
-        this.preferencias = preferencias;
-    }
-
     public String getAvatar() {
         return avatar;
     }
@@ -144,172 +128,154 @@ public class Usuario{
         this.ranking = ranking;
     }
 
-    // Método para agregar una partida al historial
-    public void agregarPartida(String partida) {
-        this.historialPartidas.add(partida);
+    public String getIdioma() {
+        return idioma;
     }
-    
+
+    public void setIdioma(String idioma) {
+        this.idioma = idioma;
+    }
+
+    // Métodos de sesión
     public boolean iniciarSesion(String contrasena) {
         if (this.contrasena.equals(contrasena)) {
-            Usuario.usuarioLogueado = this; 
+            Usuario.usuarioLogueado = this;
             return true;
         }
         return false;
     }
-    
+
     public static void cerrarSesion() {
-        Usuario.usuarioLogueado = null; 
+        Usuario.usuarioLogueado = null;
     }
 
     public static Usuario getUsuarioLogueado() {
         return Usuario.usuarioLogueado;
     }
 
-
-    public void guardarUsuario() {
-        // Ruta absoluta fija
-        String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";
-        String rutaCarpeta = rutaBase + nombreUsuario + "/";
-
-        File carpeta = new File(rutaCarpeta);
-
-        // Crear la carpeta si no existe
-        if (!carpeta.exists()) {
-            System.out.println("Creando carpeta para el usuario: " + carpeta.getAbsolutePath());
-            if (carpeta.mkdirs()) {
-                System.out.println("Carpeta creada exitosamente.");
-            } else {
-                System.out.println("Error al crear la carpeta.");
-                return;
-            }
-        }
-
-        // Ruta del archivo
-        String rutaArchivo = rutaCarpeta + "datos_usuario.dat";
-        System.out.println("Guardando archivo en: " + rutaArchivo);
-
-        try (RandomAccessFile raf = new RandomAccessFile(rutaArchivo, "rw")) {
-            // Escribir datos en el archivo
-            raf.writeUTF(nombreUsuario);
-            raf.writeUTF(contrasena);
-            raf.writeUTF(nombreCompleto);
-            raf.writeLong(fechaRegistro.getTime());
-            raf.writeLong(ultimaSesion.getTime());
-            raf.writeInt(progresoJuego);
-            raf.writeInt(puntajeMaximo);
-            raf.writeLong(tiempoTotalJugado);
-
-            // Escribir historial de partidas
-            raf.writeInt(historialPartidas.size());
-            for (String partida : historialPartidas) {
-                raf.writeUTF(partida);
-            }
-
-            // Escribir preferencias
-            raf.writeInt(preferencias.getVolumen());
-            raf.writeUTF(preferencias.getIdioma());
-            raf.writeUTF(preferencias.getControles());
-
-            // Escribir avatar y ranking
-            raf.writeUTF(avatar);
-            raf.writeInt(ranking);
-
-            System.out.println("Usuario guardado correctamente.");
-        } catch (IOException e) {
-            System.out.println("Error al guardar el usuario:");
-            e.printStackTrace();
-        }
+    // Método para agregar una partida al historial
+    public void agregarPartida(String partida) {
+        this.historialPartidas.add(partida);
     }
 
-    // Método para cargar un usuario desde un archivo binario usando RandomAccessFile
-    public static Usuario cargarUsuario(String nombreUsuario) {
-        // Ruta absoluta fija
-        String rutaBase = "C:/Users/Lenovo/Desktop/gameRope/usuarios";
-        String rutaCarpeta = rutaBase + nombreUsuario + "/";
+    // Método para guardar el usuario en un archivo binario
+    public void guardarUsuario() {
+    String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
+    String rutaCarpeta = rutaBase + nombreUsuario + "\\";
+    File carpeta = new File(rutaCarpeta);
 
-        String rutaArchivo = rutaCarpeta + "datos_usuario.dat";
+    if (!carpeta.exists() && !carpeta.mkdirs()) {
+        System.out.println("Error al crear la carpeta.");
+        return;
+    }
+
+    String rutaArchivo = rutaCarpeta + "datos_usuario.dat";
+    System.out.println("Guardando archivo en: " + rutaArchivo);
+
+    try (RandomAccessFile raf = new RandomAccessFile(rutaArchivo, "rw")) {
+        // Guardar todos los campos
+        raf.writeUTF(nombreUsuario); // Guardar nombre de usuario
+        raf.writeUTF(contrasena);    // Guardar contraseña
+        raf.writeUTF(nombreCompleto); // Guardar nombre completo
+        raf.writeLong(fechaRegistro.getTime());
+        raf.writeLong(ultimaSesion.getTime());
+        raf.writeInt(progresoJuego);
+        raf.writeInt(puntajeMaximo);
+        raf.writeLong(tiempoTotalJugado);
+        raf.writeInt(historialPartidas.size());
+        for (String partida : historialPartidas) {
+            raf.writeUTF(partida);
+        }
+        raf.writeUTF(avatar);
+        raf.writeInt(ranking);
+        raf.writeUTF(idioma);
+        System.out.println("Usuario guardado correctamente.");
+    } catch (IOException e) {
+        System.out.println("Error al guardar el usuario:");
+        e.printStackTrace();
+    }
+}
+
+    // Método para cargar solo la información esencial (login)
+    public static Usuario cargarUsuarioLogin(String nombreUsuario) {
+        String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
+        String rutaArchivo = rutaBase + nombreUsuario + "\\datos_usuario.dat";
         File archivo = new File(rutaArchivo);
 
-        // Verificar si el archivo existe
         if (!archivo.exists()) {
             System.out.println("El archivo no existe: " + rutaArchivo);
             return null;
         }
 
-        System.out.println("Cargando archivo desde: " + rutaArchivo);
-
         try (RandomAccessFile raf = new RandomAccessFile(archivo, "r")) {
-            // Leer datos del archivo
+            // Leer solo los campos esenciales
             String nombreCompleto = raf.readUTF();
             String contrasena = raf.readUTF();
 
-            Date fechaRegistro = new Date(raf.readLong());
-            Date ultimaSesion = new Date(raf.readLong());
-            int progresoJuego = raf.readInt();
-            int puntajeMaximo = raf.readInt();
-            long tiempoTotalJugado = raf.readLong();
-
-            // Leer historial de partidas
-            int numPartidas = raf.readInt();
-            List<String> historialPartidas = new ArrayList<>();
-            for (int i = 0; i < numPartidas; i++) {
-                historialPartidas.add(raf.readUTF());
-            }
-
-            // Leer preferencias
-            int volumen = raf.readInt();
-            String idioma = raf.readUTF();
-            String controles = raf.readUTF();
-
-            // Leer avatar y ranking
-            String avatar = raf.readUTF();
-            int ranking = raf.readInt();
-
-            // Crear el objeto Usuario
+            // Crear el objeto Usuario con valores predeterminados
             Usuario usuario = new Usuario(nombreUsuario, contrasena, nombreCompleto);
-            usuario.setFechaRegistro(fechaRegistro);
-            usuario.setUltimaSesion(ultimaSesion);
-            usuario.setProgresoJuego(progresoJuego);
-            usuario.setPuntajeMaximo(puntajeMaximo);
-            usuario.setTiempoTotalJugado(tiempoTotalJugado);
-            usuario.setHistorialPartidas(historialPartidas);
-            usuario.getPreferencias().setVolumen(volumen);
-            usuario.getPreferencias().setIdioma(idioma);
-            usuario.getPreferencias().setControles(controles);
-            usuario.setAvatar(avatar);
-            usuario.setRanking(ranking);
-
-            System.out.println("Usuario cargado correctamente.");
+            System.out.println("Usuario cargado correctamente (login).");
             return usuario;
         } catch (IOException e) {
-            System.out.println("Error al cargar el usuario:");
+            System.out.println("Error al cargar el usuario (login):");
             e.printStackTrace();
             return null;
         }
     }
 
-    public static boolean verificarContrasena(String nombreUsuario, String contrasena) {
-        // Ruta absoluta hacia la carpeta usuarios
-        String rutaBase = "C:/Users/Lenovo/Desktop/gameRope/usuarios";
-        String rutaArchivo = rutaBase + nombreUsuario + "/datos_usuario.dat";
+    // Método para cargar toda la información del usuario (perfil)
+    public void cargarUsuarioCompleto() {
+        String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
+        String rutaArchivo = rutaBase + nombreUsuario + "\\datos_usuario.dat";
         File archivo = new File(rutaArchivo);
 
-        // Verificar si el archivo existe
+        if (!archivo.exists()) {
+            System.out.println("El archivo no existe: " + rutaArchivo);
+            return;
+        }
+
+        try (RandomAccessFile raf = new RandomAccessFile(archivo, "r")) {
+            // Saltar los campos esenciales (ya cargados en el login)
+            raf.readUTF(); // nombreUsuario
+            raf.readUTF(); // contrasena
+            raf.readUTF(); // nombreCompleto
+
+            // Cargar el resto de la información
+            this.fechaRegistro = new Date(raf.readLong());
+            this.ultimaSesion = new Date(raf.readLong());
+            this.progresoJuego = raf.readInt();
+            this.puntajeMaximo = raf.readInt();
+            this.tiempoTotalJugado = raf.readLong();
+            int numPartidas = raf.readInt();
+            this.historialPartidas = new ArrayList<>();
+            for (int i = 0; i < numPartidas; i++) {
+                this.historialPartidas.add(raf.readUTF());
+            }
+            this.avatar = raf.readUTF();
+            this.ranking = raf.readInt();
+            this.idioma = raf.readUTF();
+
+            System.out.println("Información completa del usuario cargada correctamente.");
+        } catch (IOException e) {
+            System.out.println("Error al cargar la información completa del usuario:");
+            e.printStackTrace();
+        }
+    }
+
+    // Método para verificar la contraseña
+    public static boolean verificarContrasena(String nombreUsuario, String contrasena) {
+        String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
+        String rutaArchivo = rutaBase + nombreUsuario + "\\datos_usuario.dat";
+        File archivo = new File(rutaArchivo);
+
         if (!archivo.exists()) {
             System.out.println("El archivo no existe: " + rutaArchivo);
             return false;
         }
 
-        System.out.println("Verificando contraseña desde: " + rutaArchivo);
-
         try (RandomAccessFile raf = new RandomAccessFile(archivo, "r")) {
-            // Leer el nombre de usuario (lo ignoramos)
-            raf.readUTF();
-
-            // Leer la contraseña
+            raf.readUTF(); // Ignorar nombre de usuario
             String contrasenaArchivo = raf.readUTF();
-
-            // Verificar si la contraseña coincide
             return contrasenaArchivo.equals(contrasena);
         } catch (IOException e) {
             System.out.println("Error al verificar la contraseña:");
