@@ -2,6 +2,7 @@ package com.rope.Game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -13,33 +14,41 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 public class MenuInicio implements Screen {
+
     private Stage stage;
     private TextButton botonLogin;
     private TextButton botonCrearCuenta;
-    private main game; // Referencia a la clase principal
+    private Label titulo;
+    private main game;
 
     public MenuInicio(main game) {
-        this.game = game; // Recibe la instancia de la clase principal
+        this.game = game;
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage); // Habilitar el Stage para manejar la entrada
+        Gdx.input.setInputProcessor(stage);
+
+        // Crear la interfaz de usuario
+        crearUI();
+    }
+
+    private void crearUI() {
+        Table table = new Table();
+        table.setFillParent(true); // Hacer que la tabla ocupe toda la pantalla
+        stage.addActor(table);
 
         // Crear una fuente básica
         BitmapFont font = new BitmapFont();
 
         // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font; // Asignar la fuente al estilo de Label
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font; // Asignar la fuente al estilo de TextButton
+        buttonStyle.font = font;
+        buttonStyle.fontColor = Color.WHITE;
 
-        // Crear la tabla para organizar los componentes
-        Table table = new Table();
-        table.setFillParent(true); // Hacer que la tabla ocupe toda la pantalla
-        stage.addActor(table);
-
-        // Crear los componentes
-        Label titulo = new Label("Menú de Inicio", labelStyle);
+        // Definir textos directamente (sin usar IdiomaManager)
+        titulo = new Label("Menú de Inicio", labelStyle);
         botonLogin = new TextButton("Iniciar Sesión", buttonStyle);
         botonCrearCuenta = new TextButton("Crear Cuenta", buttonStyle);
 
