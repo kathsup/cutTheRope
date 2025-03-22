@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import java.util.Date;
 
 public class LoginScreen implements Screen {
     private Stage stage;
@@ -96,28 +97,29 @@ public class LoginScreen implements Screen {
     }
 
     private void iniciarSesion() {
-        String nombreUsuario = campoUsuario.getText();
-        String contrasena = campoContrasena.getText();
+    String nombreUsuario = campoUsuario.getText();
+    String contrasena = campoContrasena.getText();
 
-        // Verificar la contraseña
-        if (Usuario.verificarContrasena(nombreUsuario, contrasena)) {
-            System.out.println("Inicio de sesión exitoso");
+    if (Usuario.verificarContrasena(nombreUsuario, contrasena)) {
+        System.out.println("Inicio de sesión exitoso");
 
-            // Cargar el usuario y establecerlo como logueado
-            Usuario usuario = Usuario.cargarUsuario(nombreUsuario);
-            if (usuario != null) {
-                usuario.iniciarSesion(contrasena); // Establecer el usuario logueado
-                System.out.println("Usuario logueado: " + Usuario.getUsuarioLogueado().getNombreUsuario());
+        Usuario usuario = Usuario.cargarUsuarioLogin(nombreUsuario);
+        if (usuario != null) {
+            usuario.setUltimaSesion(new Date());
 
-                // Cambiar a la pantalla del mapa o menú principal
-                game.setScreen(new mapa(game)); // Cambiar a la pantalla del mapa
-            } else {
-                System.out.println("Error al cargar el usuario.");
-            }
+            usuario.guardarUsuario();
+
+            usuario.iniciarSesion(contrasena);
+            System.out.println("Usuario logueado: " + Usuario.getUsuarioLogueado().getNombreUsuario());
+
+            game.setScreen(new mapa(game)); 
         } else {
-            System.out.println("Usuario o contraseña incorrectos");
+            System.out.println("Error al cargar el usuario.");
         }
+    } else {
+        System.out.println("Usuario o contraseña incorrectos");
     }
+}
 
     @Override
     public void show() {

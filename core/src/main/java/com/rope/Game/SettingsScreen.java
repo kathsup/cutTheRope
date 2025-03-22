@@ -15,7 +15,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 public class SettingsScreen implements Screen {
     private Stage stage;
     private TextButton btnPreferencias, btnMiPerfil, btnRanking, btnEstadisticas, btnRegresar,btnSignOut;
-    private main game; // Referencia a la clase principal
+    private main game; 
 
     public SettingsScreen(main game) {
         this.game = game; // Recibe la instancia de la clase principal
@@ -68,6 +68,8 @@ public class SettingsScreen implements Screen {
                 System.out.println("Mi Perfil presionado");
                 // Aquí puedes cambiar a la pantalla de Mi Perfil
                 // game.setScreen(new MiPerfilScreen(game));
+                
+                game.setScreen(new PerfilScreen(game));
             }
         });
 

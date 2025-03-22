@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import java.util.Date;
 
 public class CrearCuentaScreen implements Screen {
 
@@ -114,7 +115,8 @@ public class CrearCuentaScreen implements Screen {
 
         // Guardar el usuario en un archivo
         nuevoUsuario.guardarUsuario();
-
+        
+        nuevoUsuario.setFechaRegistro(new Date());
         System.out.println("Cuenta creada:");
         System.out.println("Usuario: " + usuario);
         System.out.println("Contraseña: " + contrasena);
