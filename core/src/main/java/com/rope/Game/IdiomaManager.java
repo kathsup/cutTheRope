@@ -11,7 +11,7 @@ public class IdiomaManager {
     private Map<String, IdiomaListener> listeners;
 
     private IdiomaManager() {
-        this.idiomaActual = "es"; // Idioma predeterminado
+        this.idiomaActual = "es"; 
         this.textos = new HashMap<>();
         this.listeners = new HashMap<>();
         cargarTextos();
@@ -25,7 +25,6 @@ public class IdiomaManager {
     }
 
     private void cargarTextos() {
-        // Limpiar los textos anteriores
         textos.clear();
 
         // Textos en español

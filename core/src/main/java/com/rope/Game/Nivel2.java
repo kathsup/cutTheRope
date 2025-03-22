@@ -535,26 +535,39 @@ public void render(float delta) {
     }
 
     @Override
-    public void verificarCondicionesVictoria() {
-        if (ballBody != null && rana != null) {
+public void verificarCondicionesVictoria() {
+    if (ballBody != null && rana != null) {
         Vector2 ranaPos = rana.getBody().getPosition();
         Vector2 ballPos = ballBody.getPosition();
 
-        // Verificar si el dulce colisiona con la rana
+        // Verificar si el dulce colisiona con la rana y se han recolectado las estrellas necesarias
         if (ranaPos.dst(ballPos) < 2.0f && estrellasRecolectadas >= 1) { // Distancia de colisión
             System.out.println("¡La rana se comió el dulce!");
-            
+
+            // Obtener el usuario logueado
+            Usuario usuario = Usuario.getUsuarioLogueado();
+            if (usuario != null) {
+                // Sumar las estrellas recolectadas al puntaje máximo del usuario
+                int nuevoPuntaje = usuario.getPuntajeMaximo() + estrellasRecolectadas;
+                usuario.setPuntajeMaximo(nuevoPuntaje); // Actualizar el puntaje máximo
+                usuario.guardarUsuario(); // Guardar los cambios en el archivo
+                System.out.println("Puntos sumados al usuario: " + estrellasRecolectadas);
+            }
+
             // Liberar recursos del sprite del dulce
             if (boxSprite != null) {
                 boxSprite.getTexture().dispose();
                 boxSprite = null;
             }
-            
+
+            // Destruir el cuerpo del dulce
             world.destroyBody(ballBody);
             ballBody = null; // Marcar el dulce como comido
+
+            // Marcar el nivel como completado
             nivelCompletado = true;
             System.out.println("¡Nivel 2 completado!");
-            
+
             // Cambiar la textura de la rana
             rana.setEatingTexture();
 
@@ -567,7 +580,7 @@ public void render(float delta) {
             }, 0.09f); // Duración de la animación de comer
         }
     }
-    }
+}
 
     @Override
     public void manejarVictoria() {
