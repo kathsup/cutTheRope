@@ -267,6 +267,30 @@ public class Usuario{
             e.printStackTrace();
         }
     }
+    
+    // En la clase Usuario, asegúrate de que se guarden y carguen correctamente estas estadísticas
+public void registrarPartidaJugada(int nivel, int puntosObtenidos, long tiempoJugado) {
+    // Formato del registro: "Nivel-Puntos-Tiempo"
+    String registro = "Nivel" + nivel + "-" + puntosObtenidos + "pts-" + formatearTiempo(tiempoJugado);
+    
+    if (this.historialPartidas == null) {
+        this.historialPartidas = new ArrayList<>();
+    }
+    
+    this.historialPartidas.add(registro);
+    this.tiempoTotalJugado += tiempoJugado;
+    
+    // Guardar los cambios
+    guardarUsuario();
+}
+
+private String formatearTiempo(long milisegundos) {
+    long segundos = milisegundos / 1000;
+    long minutos = segundos / 60;
+    segundos %= 60;
+    
+    return String.format("%02dm%02ds", minutos, segundos);
+}
 }
 
 
