@@ -642,22 +642,32 @@ private boolean isPointNearLine(float px, float py, float x1, float y1, float x2
     }
 
     @Override
-    public void verificarCondicionesVictoria() {
-        if (ballBody != null && rana != null) {
+public void verificarCondicionesVictoria() {
+    if (ballBody != null && rana != null) {
         Vector2 ranaPos = rana.getBody().getPosition();
         Vector2 ballPos = ballBody.getPosition();
 
-        // Verificar si el dulce colisiona con la rana
+        // Verificar si el dulce colisiona con la rana y se han recolectado las estrellas necesarias
         if (ranaPos.dst(ballPos) < 2.0f && estrellasRecolectadas >= 1) { // Distancia de colisión y estrellas requeridas
             System.out.println("¡La rana se comió el dulce!");
-            
+
             // Evitar colisiones múltiples
             if (!collidedRana.contains(rana.getBody())) {
                 collidedRana.add(rana.getBody());
-                
+
+                // Obtener el usuario logueado
+                Usuario usuario = Usuario.getUsuarioLogueado();
+                if (usuario != null) {
+                    // Sumar las estrellas recolectadas al puntaje máximo del usuario
+                    int nuevoPuntaje = usuario.getPuntajeMaximo() + estrellasRecolectadas;
+                    usuario.setPuntajeMaximo(nuevoPuntaje); // Actualizar el puntaje máximo
+                    usuario.guardarUsuario(); // Guardar los cambios en el archivo
+                    System.out.println("Puntos sumados al usuario: " + estrellasRecolectadas);
+                }
+
                 // Marcar el dulce para ser eliminado
                 bodiesToRemove.add(ballBody);
-                
+
                 // Liberar recursos del sprite del dulce
                 if (boxSprite != null) {
                     boxSprite.getTexture().dispose();
@@ -693,11 +703,11 @@ private boolean isPointNearLine(float px, float py, float x1, float y1, float x2
 
                 // Marcar el nivel como completado
                 nivelCompletado = true;
-                System.out.println("¡Nivel completado!");
+                System.out.println("¡Nivel 4 completado!");
             }
         }
     }
-    }
+}
 
     @Override
     public void manejarVictoria() {

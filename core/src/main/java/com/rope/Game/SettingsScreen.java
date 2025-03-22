@@ -2,6 +2,7 @@ package com.rope.Game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -12,38 +13,48 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
-public class SettingsScreen implements Screen {
+public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
+
     private Stage stage;
-    private TextButton btnPreferencias, btnMiPerfil, btnRanking, btnEstadisticas, btnRegresar,btnSignOut;
-    private main game; 
+    private TextButton btnPreferencias, btnMiPerfil, btnRanking, btnEstadisticas, btnRegresar, btnSignOut;
+    private main game;
 
     public SettingsScreen(main game) {
-        this.game = game; // Recibe la instancia de la clase principal
+        this.game = game;
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage); // Habilitar el Stage para manejar la entrada
+        Gdx.input.setInputProcessor(stage);
+
+        // Registrar esta pantalla en el IdiomaManager
+        IdiomaManager.getInstancia().agregarListener("SettingsScreen", this);
+
+        // Crear la interfaz de usuario
+        crearUI();
+    }
+
+    private void crearUI() {
+        Table table = new Table();
+        table.setFillParent(true); // Hacer que la tabla ocupe toda la pantalla
+        stage.addActor(table);
 
         // Crear una fuente básica
         BitmapFont font = new BitmapFont();
 
         // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font; // Asignar la fuente al estilo de Label
+        labelStyle.font = font;
+        labelStyle.fontColor = Color.WHITE;
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font; // Asignar la fuente al estilo de TextButton
-
-        // Crear la tabla para organizar los componentes
-        Table table = new Table();
-        table.setFillParent(true); // Hacer que la tabla ocupe toda la pantalla
-        stage.addActor(table);
+        buttonStyle.font = font;
+        buttonStyle.fontColor = Color.WHITE;
 
         // Crear los botones
-        btnPreferencias = new TextButton("Preferencias", buttonStyle);
-        btnMiPerfil = new TextButton("Mi Perfil", buttonStyle);
-        btnRanking = new TextButton("Ranking", buttonStyle);
-        btnEstadisticas = new TextButton("Estadísticas", buttonStyle);
-        btnRegresar = new TextButton("Regresar al Mapa", buttonStyle);
-        btnSignOut= new TextButton("Sign out", buttonStyle);
+        btnPreferencias = new TextButton("", buttonStyle);
+        btnMiPerfil = new TextButton("", buttonStyle);
+        btnRanking = new TextButton("", buttonStyle);
+        btnEstadisticas = new TextButton("", buttonStyle);
+        btnRegresar = new TextButton("", buttonStyle);
+        btnSignOut = new TextButton("", buttonStyle);
 
         // Agregar los botones a la tabla
         table.add(btnPreferencias).pad(10).row();
@@ -52,23 +63,18 @@ public class SettingsScreen implements Screen {
         table.add(btnEstadisticas).pad(10).row();
         table.add(btnRegresar).pad(20).row();
         table.add(btnSignOut).pad(30).row();
+
         // Configurar eventos de los botones
         btnPreferencias.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Preferencias presionado");
-                // Aquí puedes cambiar a la pantalla de Preferencias
-                 game.setScreen(new AjustesScreen(game));
+                game.setScreen(new AjustesScreen(game));
             }
         });
 
         btnMiPerfil.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Mi Perfil presionado");
-                // Aquí puedes cambiar a la pantalla de Mi Perfil
-                // game.setScreen(new MiPerfilScreen(game));
-                
                 game.setScreen(new PerfilScreen(game));
             }
         });
@@ -76,58 +82,69 @@ public class SettingsScreen implements Screen {
         btnRanking.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Ranking presionado");
-                // Aquí puedes cambiar a la pantalla de Ranking
-                // game.setScreen(new RankingScreen(game));
+                // Cambiar a la pantalla de Ranking
             }
         });
 
         btnEstadisticas.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+
                 System.out.println("Estadísticas presionado");
                 // Aquí puedes cambiar a la pantalla de Estadísticas
                  game.setScreen(new Estadisticas(game));
+
             }
         });
 
         btnRegresar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Regresar presionado");
-                // Volver a la pantalla anterior (por ejemplo, el menú principal)
                 game.setScreen(new mapa(game));
             }
         });
-        
+
         btnSignOut.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                System.out.println("Regresar presionado");
-                // Volver a la pantalla anterior (por ejemplo, el menú principal)
                 game.setScreen(new MenuInicio(game));
             }
         });
+
+        // Actualizar los textos según el idioma actual
+        actualizarTextos();
+    }
+
+    private void actualizarTextos() {
+        btnPreferencias.setText(IdiomaManager.getInstancia().getTexto("preferencias"));
+        btnMiPerfil.setText(IdiomaManager.getInstancia().getTexto("mi_perfil"));
+        btnRanking.setText(IdiomaManager.getInstancia().getTexto("ranking"));
+        btnEstadisticas.setText(IdiomaManager.getInstancia().getTexto("estadisticas"));
+        btnRegresar.setText(IdiomaManager.getInstancia().getTexto("regresar_mapa"));
+        btnSignOut.setText(IdiomaManager.getInstancia().getTexto("cerrar_sesion"));
+    }
+
+    @Override
+    public void onIdiomaCambiado(String nuevoIdioma) {
+        // Actualizar los textos cuando el idioma cambie
+        actualizarTextos();
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage); // Habilitar el Stage para manejar la entrada
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void render(float delta) {
-        // Limpiar la pantalla
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        // Dibujar el Stage
         stage.act(delta);
         stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true); // Actualizar el viewport al cambiar el tamaño de la pantalla
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -141,6 +158,8 @@ public class SettingsScreen implements Screen {
 
     @Override
     public void dispose() {
+        // Remover el listener cuando la pantalla se destruya
+        IdiomaManager.getInstancia().removerListener("SettingsScreen");
         stage.dispose();
     }
 }

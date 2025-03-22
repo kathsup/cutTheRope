@@ -370,12 +370,22 @@ private boolean isTouchingRope(float touchX, float touchY) {
     }
 
     @Override
-    public void verificarCondicionesVictoria() {
-        if (dulce == null && estrellasRecolectadas >= 1) {
-            nivelCompletado = true;
-            System.out.println("¡Nivel 1 completado!");
+public void verificarCondicionesVictoria() {
+    if (dulce == null && estrellasRecolectadas >= 1) {
+        nivelCompletado = true;
+        System.out.println("¡Nivel 1 completado!");
+
+        // Obtener el usuario logueado
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null) {
+            // Sumar las estrellas recolectadas al puntaje máximo del usuario
+            int nuevoPuntaje = usuario.getPuntajeMaximo() + estrellasRecolectadas;
+            usuario.setPuntajeMaximo(nuevoPuntaje); // Actualizar el puntaje máximo
+            usuario.guardarUsuario(); // Guardar los cambios en el archivo
+            System.out.println("Puntos sumados al usuario: " + estrellasRecolectadas);
         }
     }
+}
 
     @Override
     public void manejarVictoria() {

@@ -109,14 +109,25 @@ public class CrearCuentaScreen implements Screen {
         String usuario = campoUsuario.getText();
         String contrasena = campoContrasena.getText();
         String nombreCompleto = campoNombreCompleto.getText();
+        
+         if (usuario.isEmpty() || contrasena.isEmpty() || nombreCompleto.isEmpty()) {
+        // Aquí podrías mostrar un mensaje de error
+        System.out.println("Error: Todos los campos son requeridos");
+        return;
+    }
 
         // Crear un nuevo usuario
         Usuario nuevoUsuario = new Usuario(usuario, contrasena, nombreCompleto);
+        nuevoUsuario.setFechaRegistro(new Date());
+        
+        boolean[] nivelesIniciales = new boolean[]{true, false, false, false, false};
+        nuevoUsuario.setNivelesDesbloqueados(nivelesIniciales);
 
+        
         // Guardar el usuario en un archivo
         nuevoUsuario.guardarUsuario();
         
-        nuevoUsuario.setFechaRegistro(new Date());
+        
         System.out.println("Cuenta creada:");
         System.out.println("Usuario: " + usuario);
         System.out.println("Contraseña: " + contrasena);

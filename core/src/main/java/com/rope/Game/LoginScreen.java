@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import java.io.File;
 import java.util.Date;
 
 public class LoginScreen implements Screen {
@@ -100,22 +101,33 @@ public class LoginScreen implements Screen {
     String nombreUsuario = campoUsuario.getText();
     String contrasena = campoContrasena.getText();
 
-    if (Usuario.verificarContrasena(nombreUsuario, contrasena)) {
+    // Verificar si el archivo del usuario existe
+    String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";
+    String rutaArchivo = rutaBase + nombreUsuario + "\\datos_usuario.dat";
+    File archivo = new File(rutaArchivo);
+
+    if (!archivo.exists()) {
+        System.out.println("El archivo no existe: " + rutaArchivo);
+        return;
+    }
+
+    // Cargar el usuario desde el archivo binario
+    Usuario usuario = new Usuario(nombreUsuario, "", ""); // Crear un objeto Usuario vacío
+    usuario.cargarUsuarioCompleto(); // Cargar toda la información desde el archivo
+
+    // Verificar la contraseña
+    if (usuario.getContrasena().equals(contrasena)) {
         System.out.println("Inicio de sesión exitoso");
 
-        Usuario usuario = Usuario.cargarUsuarioLogin(nombreUsuario);
-        if (usuario != null) {
-            usuario.setUltimaSesion(new Date());
+        // Actualizar el idioma en el IdiomaManager
+        IdiomaManager.getInstancia().cambiarIdioma(usuario.getIdioma());
 
-            usuario.guardarUsuario();
+        // Iniciar sesión
+        usuario.iniciarSesion(contrasena);
+        System.out.println("Usuario logueado: " + Usuario.getUsuarioLogueado().getNombreUsuario());
 
-            usuario.iniciarSesion(contrasena);
-            System.out.println("Usuario logueado: " + Usuario.getUsuarioLogueado().getNombreUsuario());
-
-            game.setScreen(new mapa(game)); 
-        } else {
-            System.out.println("Error al cargar el usuario.");
-        }
+        // Navegar a la pantalla principal (mapa)
+        game.setScreen(new mapa(game));
     } else {
         System.out.println("Usuario o contraseña incorrectos");
     }

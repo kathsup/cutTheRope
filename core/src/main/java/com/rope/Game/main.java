@@ -15,14 +15,14 @@ import com.badlogic.gdx.audio.Music;
 public class main extends Game{
     private Screen[] niveles;
     public static main instance; 
-    public boolean[] nivelesDesbloqueados;
+    //public boolean[] nivelesDesbloqueados;
     //private Musica musicaFondo; // Instancia de Musica
     private Music musica; 
     public boolean sonidoActivado = true;
 
     @Override
     public void create() {
-        nivelesDesbloqueados = new boolean[]{true, false, false, false, false};  // Solo el nivel 1 está desbloqueado al inicio
+        //nivelesDesbloqueados = new boolean[]{true, false, false, false, false};  // Solo el nivel 1 está desbloqueado al inicio
         
         //musicaFondo = new Musica("musicaproyecto.mp3");
         //musicaFondo.reproducir(); // Iniciar la reproducción
@@ -51,16 +51,39 @@ public class main extends Game{
     }
 
     // Método para desbloquear un nivel
-    public void desbloquearNivel(int nivel) {
+    /*public void desbloquearNivel(int nivel) {
         if (nivel < nivelesDesbloqueados.length) {
             nivelesDesbloqueados[nivel] = true;
             System.out.println("Nivel " + (nivel + 1) + " desbloqueado!");
         }
+    }*/
+    
+    public void desbloquearNivel(int nivel) {
+        Usuario usuarioActual = Usuario.getUsuarioLogueado();
+        
+        if (usuarioActual != null) {
+            // Desbloquear nivel para el usuario actual
+            usuarioActual.desbloquearNivel(nivel);
+        } else {
+            System.out.println("No hay usuario logueado para guardar el progreso.");
+        }
     }
 
     // Método para obtener los niveles desbloqueados
-    public boolean[] getNivelesDesbloqueados() {
+   /* public boolean[] getNivelesDesbloqueados() {
         return nivelesDesbloqueados;
+    }*/
+    
+    public boolean[] getNivelesDesbloqueados() {
+        Usuario usuarioActual = Usuario.getUsuarioLogueado();
+        
+        if (usuarioActual != null) {
+            // Obtener los niveles desbloqueados del usuario actual
+            return usuarioActual.getNivelesDesbloqueados();
+        } else {
+            // Si no hay usuario logueado, devolvemos valores por defecto
+            return new boolean[]{true, false, false, false, false};
+        }
     }
 
     @Override

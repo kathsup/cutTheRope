@@ -130,13 +130,6 @@ public abstract class NivelBase implements Screen {
         }
     }
 
-   /* protected void regresarAlMapa() {
-        if(!mapaLlamado){
-            System.out.println("Regresando al mapa...");
-            game.setScreen(new mapa(game));
-            mapaLlamado = true;
-        }
-    }*/
     
     protected void regresarAlMapa() {
         if (!mapaLlamado) {
