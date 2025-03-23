@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Timer;
 
 public abstract class NivelBase implements Screen {
-    
+
     protected World world;
     protected Dulce dulce;
     protected Rana rana;
@@ -23,26 +23,22 @@ public abstract class NivelBase implements Screen {
     public main game;
     protected long tiempoInicio; // Para almacenar el tiempo de inicio del nivel
     protected long tiempoTotal;
-    
-    
+
     private Texture cuadroVictoriaTexture, cuadroDerrotaTexture;
     protected boolean mostrarCuadroVictoria = false, mostrarCuadroDerrota = false;
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private boolean mapaLlamado = false;
     protected boolean perdidaProcesada = false;
-    
-
-    
 
     // Inicializar la cámara y el batch
     public void show() {
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 800, 480);  // Ajusta el tamaño según lo que necesites
         batch = new SpriteBatch();
-        game = (main) Gdx.app.getApplicationListener(); 
+        game = (main) Gdx.app.getApplicationListener();
     }
-    
+
     // Método abstracto para definir las condiciones de victoria en cada nivel
     public abstract void verificarCondicionesVictoria();
 
@@ -50,12 +46,29 @@ public abstract class NivelBase implements Screen {
     public abstract void manejarVictoria();
 
     public abstract void verificarCondicionesPerdida();
-    
+
     // Método común para mostrar el cuadro de victoria con botones de opciones
     protected void mostrarCuadroVictoria() {
-          mostrarCuadroVictoria = true;
+        mostrarCuadroVictoria = true;
 
-        cuadroVictoriaTexture = new Texture(Gdx.files.internal("cuadro_victoria.png"));
+        // Obtener el idioma del usuario
+        String idioma = IdiomaManager.getInstancia().getIdiomaActual();
+
+        // Cargar la textura adecuada según el idioma
+        switch (idioma) {
+            case "es":
+                cuadroVictoriaTexture = new Texture(Gdx.files.internal("cuadro_victoria_es.png"));
+                break;
+            case "en":
+                cuadroVictoriaTexture = new Texture(Gdx.files.internal("cuadro_victoria_en.png"));
+                break;
+            case "fr":
+                cuadroVictoriaTexture = new Texture(Gdx.files.internal("cuadro_victoria_fr.png"));
+                break;
+            default:
+                cuadroVictoriaTexture = new Texture(Gdx.files.internal("cuadro_victoria_es.png")); // Por defecto en español
+                break;
+        }
 
         // Usar un temporizador para retrasar la llamada a regresarAlMapa()
         Timer.schedule(new Timer.Task() {
@@ -66,10 +79,27 @@ public abstract class NivelBase implements Screen {
         }, 1); // Retraso de 2 segundos (ajusta según sea necesario)
     }
 
-        protected void mostrarCuadroDerrota() {
-          mostrarCuadroDerrota = true;
+    protected void mostrarCuadroDerrota() {
+        mostrarCuadroDerrota = true;
 
-        cuadroDerrotaTexture = new Texture(Gdx.files.internal("cuadro_derrota.png"));
+        // Obtener el idioma del usuario
+        String idioma = IdiomaManager.getInstancia().getIdiomaActual();
+
+        // Cargar la textura adecuada según el idioma
+        switch (idioma) {
+            case "es":
+                cuadroDerrotaTexture = new Texture(Gdx.files.internal("cuadro_derrota_es.png"));
+                break;
+            case "en":
+                cuadroDerrotaTexture = new Texture(Gdx.files.internal("cuadro_derrota_en.png"));
+                break;
+            case "fr":
+                cuadroDerrotaTexture = new Texture(Gdx.files.internal("cuadro_derrota_fr.png"));
+                break;
+            default:
+                cuadroDerrotaTexture = new Texture(Gdx.files.internal("cuadro_derrota_es.png")); // Por defecto en español
+                break;
+        }
 
         // Usar un temporizador para retrasar la llamada a regresarAlMapa()
         Timer.schedule(new Timer.Task() {
@@ -79,8 +109,7 @@ public abstract class NivelBase implements Screen {
             }
         }, 1); // Retraso de 2 segundos (ajusta según sea necesario)
     }
-     
-     
+
     // Método para recolectar estrellas (común a todos los niveles)
     protected void recolectarEstrella(int starIndex) {
         puntos += 1;
@@ -91,7 +120,7 @@ public abstract class NivelBase implements Screen {
     // Método para manejar la pérdida del nivel
     protected void perderNivel() {
         nivelPerdido = true;
-        reiniciarNivel();  
+        reiniciarNivel();
         perdidaProcesada = true;
     }
 
@@ -101,17 +130,17 @@ public abstract class NivelBase implements Screen {
     public void render(float delta) {
         camera.update();
         batch.setProjectionMatrix(camera.combined);
-        
+
         // Verificar las condiciones de victoria en cada cuadro de renderizado
         if (!nivelCompletado && !nivelPerdido && !perdidaProcesada) {
             verificarCondicionesVictoria();  // Verificar si se completó el nivel
             verificarCondicionesPerdida();   // Verificar si se perdió el nivel
         } else if (nivelCompletado) {
             manejarVictoria();  // Manejar la victoria
-        }else if (nivelPerdido){
-           reiniciarNivel();
-           nivelPerdido = false;
-           //perdidaProcesada = false; 
+        } else if (nivelPerdido) {
+            reiniciarNivel();
+            nivelPerdido = false;
+            //perdidaProcesada = false; 
         }
 
         // Si debemos mostrar el cuadro de victoria, dibujarlo
@@ -122,18 +151,17 @@ public abstract class NivelBase implements Screen {
             batch.draw(cuadroVictoriaTexture, 180, 190, 450, 125);  // Ajusta la posición y tamaño del cuadro
             batch.end();
         }
-        
+
         if (mostrarCuadroDerrota) {
             batch.begin();
 
-            // Dibujar el cuadro de victoria
+            // Dibujar el cuadro de derrota
             batch.draw(cuadroDerrotaTexture, 180, 190, 450, 125);  // Ajusta la posición y tamaño del cuadro
             batch.end();
             mostrarCuadroDerrota = false;
         }
     }
 
-    
     protected void regresarAlMapa() {
         if (!mapaLlamado) {
             System.out.println("Regresando al mapa...");
@@ -153,43 +181,34 @@ public abstract class NivelBase implements Screen {
         }
     }
 
-// Método auxiliar para obtener el índice del nivel actual
-private int obtenerIndiceNivelActual() {
-    if (this instanceof Nivel1) {
-        return 1; // Nivel 1
-    } else if (this instanceof Nivel2) {
-        return 2; // Nivel 2
-    } else if (this instanceof Nivel3) {
-        return 3; // Nivel 3
-    } else if (this instanceof Nivel4) {
-        return 4; // Nivel 4
-    } else if (this instanceof Nivel5) {
-        return 5; // Nivel 5
-    } else {
-        return 0; // Nivel desconocido
+    // Método auxiliar para obtener el índice del nivel actual
+    private int obtenerIndiceNivelActual() {
+        if (this instanceof Nivel1) {
+            return 1; // Nivel 1
+        } else if (this instanceof Nivel2) {
+            return 2; // Nivel 2
+        } else if (this instanceof Nivel3) {
+            return 3; // Nivel 3
+        } else if (this instanceof Nivel4) {
+            return 4; // Nivel 4
+        } else if (this instanceof Nivel5) {
+            return 5; // Nivel 5
+        } else {
+            return 0; // Nivel desconocido
+        }
     }
-}
-
-protected void registrarEstadisticas(int numeroNivel, int puntos, boolean victoria) {
-    // Calcular el tiempo jugado
-    tiempoTotal = System.currentTimeMillis() - tiempoInicio;
-    
-    // Registrar la partida en las estadísticas
-    Usuario usuario = Usuario.getUsuarioLogueado();
-    if (usuario != null) {
-        Estadisticas.registrarPartida(usuario, numeroNivel, puntos, tiempoTotal);
-    }
-}
 
     @Override
-     public void dispose() {
+    public void dispose() {
         // Liberar recursos
         if (cuadroVictoriaTexture != null) {
             cuadroVictoriaTexture.dispose();
+        }
+        if (cuadroDerrotaTexture != null) {
+            cuadroDerrotaTexture.dispose();
         }
         if (batch != null) {
             batch.dispose();
         }
     }
 }
-

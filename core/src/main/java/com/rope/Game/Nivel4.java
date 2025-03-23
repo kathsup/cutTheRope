@@ -714,7 +714,7 @@ public void verificarCondicionesVictoria() {
     @Override
     public void manejarVictoria() {
         if (!mostrarCuadroVictoria) {
-    registrarEstadisticas(4, estrellasRecolectadas, true);
+//    registrarEstadisticas(4, estrellasRecolectadas, true);
     mostrarCuadroVictoria(); 
     
     Usuario usuario = Usuario.getUsuarioLogueado();
@@ -740,7 +740,7 @@ public void verificarCondicionesVictoria() {
     protected void reiniciarNivel() {
          if (!perdidaProcesada) {  // Prevent multiple calls
         perdidaProcesada = true;
-        registrarEstadisticas(4, estrellasRecolectadas, false);
+//        registrarEstadisticas(4, estrellasRecolectadas, false);
 
         // También registrar la partida perdida para el usuario
         Usuario usuario = Usuario.getUsuarioLogueado();
