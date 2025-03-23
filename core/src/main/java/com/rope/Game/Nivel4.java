@@ -79,6 +79,8 @@ public class Nivel4 extends NivelBase implements Screen {
         
         batch = new SpriteBatch();
         bodiesToRemove = new Array<Body>();
+        
+        tiempoInicio = System.currentTimeMillis();
 
         // Crear el mundo de Box2D
         world = new World(new Vector2(0, -25f), true);
@@ -711,7 +713,15 @@ public void verificarCondicionesVictoria() {
 
     @Override
     public void manejarVictoria() {
+    registrarEstadisticas(4, estrellasRecolectadas, true);
     mostrarCuadroVictoria(); 
+    
+    Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null) {
+            usuario.marcarNivelComoCompletado(3); // Índice 0 para el Nivel1
+            usuario.registrarPartidaJugada(4, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+        }
+    
     if (game != null && game.getScreen() instanceof mapa) {
         game.desbloquearNivel(4);  // Desbloquear el Nivel 2 (índice 1)
     }
@@ -726,8 +736,16 @@ public void verificarCondicionesVictoria() {
 
     @Override
     protected void reiniciarNivel() {
-         System.out.println("Reiniciando Nivel 4...");
-        mostrarCuadroDerrota();// Recargar la pantalla del nivel 1
+        registrarEstadisticas(4, estrellasRecolectadas, false);
+
+        // También registrar la partida perdida para el usuario
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null) {
+            usuario.registrarPartidaJugada(4, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+        }
+
+        System.out.println("Reiniciando Nivel 4...");
+        mostrarCuadroDerrota();
   
     }
 }

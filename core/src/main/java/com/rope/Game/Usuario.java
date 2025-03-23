@@ -23,6 +23,8 @@ public class Usuario{
     private int ranking;
     private String idioma;
     private boolean[] nivelesDesbloqueados;
+    private boolean[] nivelesCompletados; // Distinto de nivelesDesbloqueados
+    
 
     // Constructor
     public Usuario(String nombreUsuario, String contrasena, String nombreCompleto) {
@@ -39,6 +41,7 @@ public class Usuario{
         this.ranking = 0;
         this.idioma = "es"; // Idioma predeterminado
         this.nivelesDesbloqueados = new boolean[]{true, false, false, false, false};
+        this.nivelesCompletados = new boolean[]{false, false, false, false, false};
     }
 
     // Getters y Setters
@@ -184,6 +187,21 @@ public class Usuario{
         }
     }
     
+    public boolean[] getNivelesCompletados() {
+    return nivelesCompletados;
+}
+
+    public void setNivelesCompletados(boolean[] nivelesCompletados) {
+        this.nivelesCompletados = nivelesCompletados;
+    }
+
+    public void marcarNivelComoCompletado(int indiceNivel) {
+        if (indiceNivel >= 0 && indiceNivel < nivelesCompletados.length) {
+            nivelesCompletados[indiceNivel] = true;
+            guardarUsuario(); // Guardar los cambios
+        }
+    }
+
     // Método para guardar el usuario en un archivo binario
     public void guardarUsuario() {
         String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";

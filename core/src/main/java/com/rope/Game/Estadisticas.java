@@ -72,7 +72,7 @@ public class Estadisticas implements Screen{
         if (usuario != null) {
             // Contar niveles completados
             int nivelesCompletados = 0;
-            boolean[] nivelesDesbloqueados = usuario.getNivelesDesbloqueados();
+            boolean[] nivelesDesbloqueados = usuario.getNivelesCompletados();
             for (int i = 0; i < nivelesDesbloqueados.length; i++) {
                 if (nivelesDesbloqueados[i]) {
                     nivelesCompletados++;

@@ -77,6 +77,7 @@ public class Nivel1 extends NivelBase implements Screen{
         System.out.println("Cámara inicializada: " + (camera != null));
         batch = new SpriteBatch();
         bodiesToRemove = new Array<Body>();
+        tiempoInicio = System.currentTimeMillis();
 
         world = new World(new Vector2(0, -25f), true);
         debugRenderer = new Box2DDebugRenderer();
@@ -372,31 +373,37 @@ private boolean isTouchingRope(float touchX, float touchY) {
     }
 
     @Override
-public void verificarCondicionesVictoria() {
-    if (dulce == null && estrellasRecolectadas >= 1) {
-        nivelCompletado = true;
-        System.out.println("¡Nivel 1 completado!");
+    public void verificarCondicionesVictoria() {
+        if (dulce == null && estrellasRecolectadas >= 1) {
+            nivelCompletado = true;
+            System.out.println("¡Nivel 1 completado!");
 
-        // Obtener el usuario logueado
-        Usuario usuario = Usuario.getUsuarioLogueado();
-        if (usuario != null) {
-            // Sumar las estrellas recolectadas al puntaje máximo del usuario
-            int nuevoPuntaje = usuario.getPuntajeMaximo() + estrellasRecolectadas;
-            usuario.setPuntajeMaximo(nuevoPuntaje); // Actualizar el puntaje máximo
-            usuario.guardarUsuario(); // Guardar los cambios en el archivo
-            System.out.println("Puntos sumados al usuario: " + estrellasRecolectadas);
+            // Obtener el usuario logueado
+            Usuario usuario = Usuario.getUsuarioLogueado();
+            if (usuario != null) {
+                // Sumar las estrellas recolectadas al puntaje máximo del usuario
+                int nuevoPuntaje = usuario.getPuntajeMaximo() + estrellasRecolectadas;
+                usuario.setPuntajeMaximo(nuevoPuntaje); // Actualizar el puntaje máximo
+                usuario.guardarUsuario(); // Guardar los cambios en el archivo
+                System.out.println("Puntos sumados al usuario: " + estrellasRecolectadas);
+            }
         }
     }
-}
 
     @Override
     public void manejarVictoria() {
+        registrarEstadisticas(1, estrellasRecolectadas, true);
         mostrarCuadroVictoria();
-        
-        if (game != null && game.getScreen() instanceof mapa) {
-        game.desbloquearNivel(1);  // Desbloquear el Nivel 2 (índice 1)
-       
-    }
+
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null) {
+            usuario.marcarNivelComoCompletado(0); // Índice 0 para el Nivel1
+            usuario.registrarPartidaJugada(1, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+        }
+
+        if (game != null) {
+            game.desbloquearNivel(1);
+        }
     }
 
     @Override
@@ -406,12 +413,21 @@ public void verificarCondicionesVictoria() {
         }
     }
 
-    
     @Override
     protected void reiniciarNivel() {
-        
+
+        /*registrarEstadisticas(1, 0, false);
         System.out.println("Reiniciando Nivel 1...");
-        //((Game) Gdx.app.getApplicationListener()).setScreen(new Nivel1());  // Recargar la pantalla del nivel 1
+        mostrarCuadroDerrota();*/
+        registrarEstadisticas(1, estrellasRecolectadas, false);
+
+        // También registrar la partida perdida para el usuario
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null) {
+            usuario.registrarPartidaJugada(1, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+        }
+
+        System.out.println("Reiniciando Nivel 1...");
         mostrarCuadroDerrota();
     }
 }

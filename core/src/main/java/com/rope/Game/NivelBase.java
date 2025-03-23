@@ -21,6 +21,8 @@ public abstract class NivelBase implements Screen {
     protected int estrellasRecolectadas = 0;
     protected boolean nivelPerdido = false;
     public main game;
+    protected long tiempoInicio; // Para almacenar el tiempo de inicio del nivel
+    protected long tiempoTotal;
     
     
     private Texture cuadroVictoriaTexture, cuadroDerrotaTexture;
@@ -167,6 +169,16 @@ private int obtenerIndiceNivelActual() {
     }
 }
 
+protected void registrarEstadisticas(int numeroNivel, int puntos, boolean victoria) {
+    // Calcular el tiempo jugado
+    tiempoTotal = System.currentTimeMillis() - tiempoInicio;
+    
+    // Registrar la partida en las estadísticas
+    Usuario usuario = Usuario.getUsuarioLogueado();
+    if (usuario != null) {
+        Estadisticas.registrarPartida(usuario, numeroNivel, puntos, tiempoTotal);
+    }
+}
 
     @Override
      public void dispose() {
