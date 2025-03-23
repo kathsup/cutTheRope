@@ -3,6 +3,7 @@ package com.rope.Game;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
@@ -20,7 +21,7 @@ public class Spike {
 
         // Definir el cuerpo de la estrella
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;  
+        bodyDef.type = BodyDef.BodyType.KinematicBody;  
         bodyDef.position.set(x, y);  // Posición en el mundo
 
         PolygonShape shape = new PolygonShape();
@@ -41,6 +42,7 @@ public class Spike {
         // sprite para la rana
         sprite = new Sprite(new Texture("spike.png"));
         sprite.setSize(5f, 1f);
+        sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); 
         
          body.setUserData(sprite);
 
@@ -50,15 +52,22 @@ public class Spike {
 
     //  dibujar la estrella
     public void draw(SpriteBatch batch) {
-        Sprite ranaSprite = (Sprite) body.getUserData();
-        ranaSprite.setPosition(body.getPosition().x - ranaSprite.getWidth() / 2,
-                body.getPosition().y - ranaSprite.getHeight() / 2);
-        ranaSprite.draw(batch);
+        Sprite spikeSprite = (Sprite) body.getUserData();
+        if (spikeSprite != null) {
+            spikeSprite.setPosition(
+                body.getPosition().x - spikeSprite.getWidth() / 2,
+                body.getPosition().y - spikeSprite.getHeight() / 2
+            );
+            //spikeSprite.setRotation(body.getAngle() * MathUtils.radiansToDegrees);
+            spikeSprite.draw(batch);
+        }
     }
     
     
     public void dispose() {
-        sprite.getTexture().dispose();
+       if (sprite != null && sprite.getTexture() != null) {
+            sprite.getTexture().dispose();
+        }
     }
     
     //obtener el cuerpo 

@@ -71,8 +71,8 @@ public class Nivel3 extends NivelBase implements Screen {
     private DistanceJoint distanceJoint2;
     //private DistanceJoint distanceJoint3;
     
-    //private Spike spike;
-    //private SpikeMover spikeMover;
+    private Spike spike;
+    private SpikeMover spikeMover;
     
     private int puntos = 0;
     private main game;  // Referencia al objeto game para manejar el estado global del juego
@@ -99,9 +99,9 @@ public class Nivel3 extends NivelBase implements Screen {
 
         bubble1 = new Bubble(world, 0, 0, new Texture("burbuja.png"));
 
-        //spike = new Spike(world, 0, -5); // Crear el Spike
-        //spikeMover = new SpikeMover(spike, 0.1f, -5f, 5f, world); // Crear el hilo
-        //spikeMover.start(); // Iniciar el hilo
+        spike = new Spike(world, 0, -5); // Crear el Spike
+        spikeMover = new SpikeMover(spike, 0.1f, -5f, 5f, world); // Crear el hilo
+        spikeMover.start(); // Iniciar el hilo
         
         world.setContactListener(new ContactListener() {
             @Override
@@ -342,34 +342,50 @@ public class Nivel3 extends NivelBase implements Screen {
         }
     }
     
-   /* private boolean isCollidingWithSpike(Fixture fixtureA, Fixture fixtureB) {
-    Body bodyA = fixtureA.getBody();
-    Body bodyB = fixtureB.getBody();
+    private boolean isCollidingWithSpike(Fixture fixtureA, Fixture fixtureB) {
+        Body bodyA = fixtureA.getBody();
+        Body bodyB = fixtureB.getBody();
 
-    if (bodyA == ballBody && bodyB == spike.getBody()) {
-        return true;
-    } else if (bodyB == ballBody && bodyA == spike.getBody()) {
-        return true;
+        // Check if one fixture is the spike and the other is the ball
+        if ((bodyA == ballBody && bodyB == spike.getBody())
+                || (bodyB == ballBody && bodyA == spike.getBody())) {
+            return true;
+        }
+
+        // Check if one fixture is the bubble and the other is the spike
+        if (bubble1 != null && ((bodyA == bubble1.getBody() && bodyB == spike.getBody())
+                || (bodyB == bubble1.getBody() && bodyA == spike.getBody()))) {
+            // Handle bubble-spike collision if needed
+            return true;
+        }
+
+        return false;
     }
-    return false;
-}*/
-    
+
     private void handleSpikeCollision() {
-    System.out.println("¡El dulce chocó con el Spike!");
-    bodiesToRemove.add(ballBody); // Marcar el dulce para eliminarlo
+        System.out.println("¡El dulce chocó con el Spike!");
 
-    // Liberar recursos del sprite del dulce
-    if (boxSprite != null) {
-        boxSprite.getTexture().dispose();
-        boxSprite = null;
+        // If the bubble is holding the dulce, pop the bubble
+        if (bubble1 != null && bubble1.isCollected()) {
+            explodeBubble();
+        }
+
+        // Mark the dulce for removal
+        if (ballBody != null) {
+            bodiesToRemove.add(ballBody);
+
+            // Release sprite resources
+            if (boxSprite != null) {
+                boxSprite.getTexture().dispose();
+                boxSprite = null;
+            }
+
+            ballBody = null;
+
+            // Set game state to lost
+            perderNivel();
+        }
     }
-
-    ballBody = null; // Establecer ballBody en null
-
-    // Aquí puedes añadir más lógica, como reiniciar el nivel o mostrar un mensaje de "game over"
-    // Por ejemplo:
-    // reiniciarNivel();
-}
 
     private boolean isCollidingWithStar(Fixture fixtureA, Fixture fixtureB) {
         // La lógica de colisión con estrellas ahora se maneja en render()
@@ -448,8 +464,22 @@ public void render(float delta) {
         }
     }*/
     
+    if (spikeMover != null && spike != null) {
+    Vector2 newPos = spikeMover.getNewPosition();
+    synchronized (world) {
+        spike.getBody().setTransform(newPos, spike.getBody().getAngle());
+    }
+}
+
+
+    
     // Dibujar los sprites
     batch.begin();
+
+       // Draw spike
+       if (spike != null) {
+           spike.draw(batch);
+       }
 
     // Dibujar la burbuja
     if (bubble1 != null) {
@@ -597,15 +627,17 @@ public void render(float delta) {
         }
 
         
-        /*if (spikeMover != null) {
-            spikeMover.interrupt(); // Detener el hilo
+        
+        
+        if (spikeMover != null) {
+            spikeMover.stopMoving(); // Use our new method
             spikeMover = null;
         }
 
         if (spike != null) {
             spike.dispose();
-        }*/
-        
+            spike = null;
+        }
         
         // Destruir la rana
         if (rana != null) {

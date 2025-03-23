@@ -12,24 +12,25 @@ public class SpikeMover extends Thread {
     private boolean movingRight = true;
     private Vector2 newPosition = new Vector2(); // Variable temporal para la nueva posición
     private World world; 
-
+    private volatile boolean running = true;
+    
     public SpikeMover(Spike spike, float speed, float minX, float maxX, World world) {
         this.spike = spike;
         this.speed = speed;
         this.minX = minX;
         this.maxX = maxX;
         this.world = world;
+        setDaemon(true);
     }
 
     
     
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) { // Verificar si el hilo fue interrumpido
-            synchronized (world) { // Sincronizar con el mundo de Box2D
-                Body spikeBody = spike.getBody();
-                float currentX = spikeBody.getPosition().x;
-
+        while (running && !Thread.currentThread().isInterrupted()) {
+            try {
+                // Calculate new position
+                float currentX = spike.getBody().getPosition().x;
                 if (movingRight) {
                     currentX += speed;
                     if (currentX >= maxX) {
@@ -43,20 +44,28 @@ public class SpikeMover extends Thread {
                         movingRight = true;
                     }
                 }
-
-                newPosition.set(currentX, spikeBody.getPosition().y); // Guardar la nueva posición
-            }
-
-            try {
-                Thread.sleep(16); // Aproximadamente 60 FPS
+                
+                // Store new position for render thread to use
+                synchronized (newPosition) {
+                    newPosition.set(currentX, spike.getBody().getPosition().y);
+                }
+                
+                Thread.sleep(16); // Approximately 60 FPS
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); // Restaurar el estado de interrupción
-                break; // Salir del bucle
+                Thread.currentThread().interrupt();
+                break;
             }
         }
     }
-
+    
     public Vector2 getNewPosition() {
-        return newPosition;
+        synchronized (newPosition) {
+            return new Vector2(newPosition);
+        }
+    }
+    
+    public void stopMoving() {
+        running = false;
+        interrupt();
     }
 }

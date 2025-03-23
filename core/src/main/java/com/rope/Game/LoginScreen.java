@@ -102,7 +102,7 @@ public class LoginScreen implements Screen {
     String contrasena = campoContrasena.getText();
 
     // Verificar si el archivo del usuario existe
-    String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
+    String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios\\";
     String rutaArchivo = rutaBase + nombreUsuario + "\\datos_usuario.dat";
     File archivo = new File(rutaArchivo);
 
