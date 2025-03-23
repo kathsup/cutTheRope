@@ -18,7 +18,7 @@ public class main extends Game{
     //public boolean[] nivelesDesbloqueados;
     //private Musica musicaFondo; // Instancia de Musica
     private Music musica; 
-    public boolean sonidoActivado = true;
+    //public boolean sonidoActivado = true;
 
     @Override
     public void create() {
@@ -31,15 +31,34 @@ public class main extends Game{
         musica = Gdx.audio.newMusic(Gdx.files.internal("musica.mp3"));
          musica.setLooping(true);
         musica.setVolume(0.5f);
-         if (sonidoActivado) {
+         /*if (sonidoActivado) {
             musica.play();
+        }*/
+         
+         Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null && usuario.isSonidoActivado()) {
+            iniciarMusica();
         }
         setScreen(new MenuInicio(this));  // Mostrar el mapa
         
 
     }
     
-    public void alternarSonido() {
+    public void iniciarMusica() {
+        if (!musica.isPlaying()) {
+            musica.play();
+        }
+    }
+
+    public void pausarMusica() {
+        musica.pause();
+    }
+
+    public void detenerMusica() {
+        musica.stop();
+    }
+    
+    /*public void alternarSonido() {
         sonidoActivado = !sonidoActivado;
 
         
@@ -48,7 +67,7 @@ public class main extends Game{
         } else {
             musica.pause(); 
         }
-    }
+    }*/
 
     // Método para desbloquear un nivel
     /*public void desbloquearNivel(int nivel) {
@@ -70,10 +89,6 @@ public class main extends Game{
     }
 
     // Método para obtener los niveles desbloqueados
-   /* public boolean[] getNivelesDesbloqueados() {
-        return nivelesDesbloqueados;
-    }*/
-    
     public boolean[] getNivelesDesbloqueados() {
         Usuario usuarioActual = Usuario.getUsuarioLogueado();
         

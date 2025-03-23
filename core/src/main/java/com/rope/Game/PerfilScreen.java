@@ -137,7 +137,7 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
     private void eliminarCuenta() {
         Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null) {
-            String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
+            String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";
             String rutaCarpetaUsuario = rutaBase + usuario.getNombreUsuario();
 
             // Crear un objeto File para la carpeta del usuario
@@ -186,7 +186,7 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
             String rutaArchivo = fileDialog.getDirectory() + fileDialog.getFile();
             if (rutaArchivo != null && !rutaArchivo.isEmpty()) {
                 // Copiar la imagen seleccionada a la carpeta del usuario
-                String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
+                String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";
                 String rutaCarpeta = rutaBase + Usuario.getUsuarioLogueado().getNombreUsuario() + "\\";
                 String nombreArchivo = "avatar.png"; // Nombre fijo para la imagen de perfil
                 String rutaDestino = rutaCarpeta + nombreArchivo;

@@ -24,6 +24,7 @@ public class Usuario{
     private String idioma;
     private boolean[] nivelesDesbloqueados;
     private boolean[] nivelesCompletados; // Distinto de nivelesDesbloqueados
+    private boolean sonidoActivado;
     
 
     // Constructor
@@ -42,9 +43,20 @@ public class Usuario{
         this.idioma = "es"; // Idioma predeterminado
         this.nivelesDesbloqueados = new boolean[]{true, false, false, false, false};
         this.nivelesCompletados = new boolean[]{false, false, false, false, false};
+        this.sonidoActivado = true;
+        cargarUsuarioCompleto();
     }
 
     // Getters y Setters
+    public boolean isSonidoActivado() {
+        return sonidoActivado;
+    }
+
+    public void setSonidoActivado(boolean sonidoActivado) {
+        this.sonidoActivado = sonidoActivado;
+        guardarUsuario();
+    }
+    
     public String getNombreUsuario() {
         return nombreUsuario;
     }
@@ -237,6 +249,7 @@ public class Usuario{
             for (boolean nivelDesbloqueado : nivelesDesbloqueados) {
                 raf.writeBoolean(nivelDesbloqueado);
             }
+            raf.writeBoolean(sonidoActivado);
             System.out.println("Usuario guardado correctamente.");
         } catch (IOException e) {
             System.out.println("Error al guardar el usuario:");
@@ -278,6 +291,7 @@ public class Usuario{
             for (int i = 0; i < numNiveles; i++) {
                 this.nivelesDesbloqueados[i] = raf.readBoolean();
             }
+            this.sonidoActivado = raf.readBoolean();
 
             System.out.println("Información completa del usuario cargada correctamente.");
         } catch (IOException e) {

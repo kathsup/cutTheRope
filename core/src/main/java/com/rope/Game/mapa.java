@@ -2,6 +2,7 @@ package com.rope.Game;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -21,10 +22,15 @@ public class mapa implements Screen {
     private Texture background; // Para el fondo
     private Vector2 posBtnNivel1, posBtnNivel2, posBtnNivel3, posBtnNivel4, posBtnNivel5,posBtnSettings;
     private float btnWidth, btnHeight;
+    //private Music musica;
 
     public mapa(main game) {
         this.game = game;
         batch = new SpriteBatch();
+        
+        /*musica = Gdx.audio.newMusic(Gdx.files.internal("musica.mp3"));
+        musica.setLooping(true);
+        musica.setVolume(0.5f);*/
 
         // Cargar texturas para los botones
         btnNivel1 = new Texture("boton.png");
@@ -51,6 +57,14 @@ public class mapa implements Screen {
         btnHeight = 70; 
     }
 
+    @Override
+    public void show() {
+       /* Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null && usuario.isSonidoActivado()) {
+            musica.play();
+        }*/
+    }
+    
     @Override
 public void render(float delta) {
     ScreenUtils.clear(0, 0, 0, 1);
@@ -114,7 +128,9 @@ public void render(float delta) {
     public void resume() {}
 
     @Override
-    public void hide() {}
+    public void hide() {
+    //musica.stop();
+    }
 
     @Override
     public void dispose() {
@@ -127,9 +143,11 @@ public void render(float delta) {
         btnSettings.dispose();
         btnNivelBloqueado.dispose();  
         background.dispose();
+        /*if (musica != null) {
+            musica.dispose();
+        }*/
         
     }
 
-    @Override
-    public void show() {}
+    
 }

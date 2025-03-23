@@ -31,7 +31,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
         this.game = game;
         stage = new Stage();
         batch = new SpriteBatch();
-
+        Usuario usuario = Usuario.getUsuarioLogueado();
         backgroundTexture = new Texture(Gdx.files.internal("preferencias.jpg"));
 
         // Inicializar textos según el idioma del usuario
@@ -46,21 +46,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
-
+        
         // Crear el botón para activar/desactivar el sonido
-        TextButton botonSonido = new TextButton(textoSonido + (game.sonidoActivado ? ": ON" : ": OFF"), buttonStyle);
+        TextButton botonSonido = new TextButton(textoSonido + (usuario.isSonidoActivado() ? ": ON" : ": OFF"), buttonStyle);
         botonSonido.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Alternar el estado del sonido
-                game.alternarSonido();
-
-                // Cambiar el texto del botón según el estado
-                if (game.sonidoActivado) {
-                    botonSonido.setText(textoSonido + ": ON");
+                
+                usuario.setSonidoActivado(!usuario.isSonidoActivado());
+                if (usuario.isSonidoActivado()) {
+                    game.iniciarMusica();
                 } else {
-                    botonSonido.setText(textoSonido + ": OFF");
+                    game.pausarMusica();
                 }
+                // Cambiar el texto del botón según el estado del usuario
+                botonSonido.setText(textoSonido + (usuario.isSonidoActivado() ? ": ON" : ": OFF"));
             }
         });
         // Añadir el botón a la escena
@@ -76,7 +76,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
                 cambiarIdioma();
                 // Actualizar los textos de la interfaz
                 actualizarTextos();
-                botonSonido.setText(textoSonido + (game.sonidoActivado ? ": ON" : ": OFF"));
+                botonSonido.setText(textoSonido + (usuario.isSonidoActivado() ? ": ON" : ": OFF"));
                 botonCambiarIdioma.setText(textoCambiarIdioma);
                 // Actualizar el texto del botón de regresar
                 botonRegresar.setText(textoRegresar);
