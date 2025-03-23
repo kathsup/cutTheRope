@@ -486,7 +486,7 @@ public class Nivel5 extends NivelBase implements Screen {
 
     @Override
 public void verificarCondicionesVictoria() {
-    if (ballBody != null && rana != null) {
+    if (ballBody != null && rana != null && !nivelCompletado) {
         Vector2 ranaPos = rana.getBody().getPosition();
         Vector2 ballPos = ballBody.getPosition();
 
@@ -534,6 +534,7 @@ public void verificarCondicionesVictoria() {
 
     @Override
     public void manejarVictoria() {
+        if (!mostrarCuadroVictoria) { 
        registrarEstadisticas(5, estrellasRecolectadas, true);
     mostrarCuadroVictoria(); 
     
@@ -541,6 +542,7 @@ public void verificarCondicionesVictoria() {
         if (usuario != null) {
             usuario.marcarNivelComoCompletado(4); // Índice 0 para el Nivel1
             usuario.registrarPartidaJugada(5, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+        }
         }
     }
 
@@ -557,6 +559,8 @@ public void verificarCondicionesVictoria() {
 
     @Override
     protected void reiniciarNivel() {
+         if (!perdidaProcesada) {  // Prevent multiple calls
+        perdidaProcesada = true;
          registrarEstadisticas(5, estrellasRecolectadas, false);
 
         // También registrar la partida perdida para el usuario
@@ -567,6 +571,6 @@ public void verificarCondicionesVictoria() {
 
         System.out.println("Reiniciando Nivel 5...");
         mostrarCuadroDerrota();
-
+         }
     }
 }

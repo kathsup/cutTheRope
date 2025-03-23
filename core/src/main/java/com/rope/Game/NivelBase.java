@@ -26,7 +26,7 @@ public abstract class NivelBase implements Screen {
     
     
     private Texture cuadroVictoriaTexture, cuadroDerrotaTexture;
-    private boolean mostrarCuadroVictoria = false, mostrarCuadroDerrota = false;
+    protected boolean mostrarCuadroVictoria = false, mostrarCuadroDerrota = false;
     private OrthographicCamera camera;
     private SpriteBatch batch;
     private boolean mapaLlamado = false;
@@ -110,7 +110,7 @@ public abstract class NivelBase implements Screen {
         }else if (nivelPerdido){
            reiniciarNivel();
            nivelPerdido = false;
-           perdidaProcesada = false; 
+           //perdidaProcesada = false; 
         }
 
         // Si debemos mostrar el cuadro de victoria, dibujarlo

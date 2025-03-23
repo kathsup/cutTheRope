@@ -83,6 +83,7 @@ public class main extends Game{
         if (usuarioActual != null) {
             // Desbloquear nivel para el usuario actual
             usuarioActual.desbloquearNivel(nivel);
+            usuarioActual.guardarCambios();
         } else {
             System.out.println("No hay usuario logueado para guardar el progreso.");
         }

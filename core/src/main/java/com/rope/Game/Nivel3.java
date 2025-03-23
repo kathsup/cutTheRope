@@ -640,7 +640,7 @@ public void render(float delta) {
 
    @Override
 public void verificarCondicionesVictoria() {
-    if (ballBody != null && rana != null) {
+    if (ballBody != null && rana != null && !nivelCompletado) {
         Vector2 ranaPos = rana.getBody().getPosition();
         Vector2 ballPos = ballBody.getPosition();
 
@@ -687,6 +687,7 @@ public void verificarCondicionesVictoria() {
 }
     @Override
     public void manejarVictoria() {
+         if (!mostrarCuadroVictoria) {
         registrarEstadisticas(3, estrellasRecolectadas, true);
     mostrarCuadroVictoria(); 
     
@@ -700,6 +701,7 @@ public void verificarCondicionesVictoria() {
         game.desbloquearNivel(3);  // Desbloquear el Nivel 2 (índice 1)
     }
     }
+    }
 
     @Override
     public void verificarCondicionesPerdida() {
@@ -710,6 +712,8 @@ public void verificarCondicionesVictoria() {
 
     @Override
     protected void reiniciarNivel() {
+         if (!perdidaProcesada) {  // Prevent multiple calls
+        perdidaProcesada = true;  
         registrarEstadisticas(3, estrellasRecolectadas, false);
 
         // También registrar la partida perdida para el usuario
@@ -720,5 +724,6 @@ public void verificarCondicionesVictoria() {
 
         System.out.println("Reiniciando Nivel 3...");
         mostrarCuadroDerrota();
+         }
     }
 }

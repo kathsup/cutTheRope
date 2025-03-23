@@ -374,7 +374,7 @@ private boolean isTouchingRope(float touchX, float touchY) {
 
     @Override
     public void verificarCondicionesVictoria() {
-        if (dulce == null && estrellasRecolectadas >= 1) {
+        if (dulce == null && estrellasRecolectadas >= 1 && !nivelCompletado) {
             nivelCompletado = true;
             System.out.println("¡Nivel 1 completado!");
 
@@ -384,7 +384,7 @@ private boolean isTouchingRope(float touchX, float touchY) {
                 // Sumar las estrellas recolectadas al puntaje máximo del usuario
                 int nuevoPuntaje = usuario.getPuntajeMaximo() + estrellasRecolectadas;
                 usuario.setPuntajeMaximo(nuevoPuntaje); // Actualizar el puntaje máximo
-                usuario.guardarUsuario(); // Guardar los cambios en el archivo
+                //usuario.guardarUsuario(); // Guardar los cambios en el archivo
                 System.out.println("Puntos sumados al usuario: " + estrellasRecolectadas);
             }
         }
@@ -392,18 +392,19 @@ private boolean isTouchingRope(float touchX, float touchY) {
 
     @Override
     public void manejarVictoria() {
+        if (!mostrarCuadroVictoria) {  // Add check to prevent multiple calls
         registrarEstadisticas(1, estrellasRecolectadas, true);
         mostrarCuadroVictoria();
-
         Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null) {
-            usuario.marcarNivelComoCompletado(0); // Índice 0 para el Nivel1
+            usuario.marcarNivelComoCompletado(0);
             usuario.registrarPartidaJugada(1, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+            usuario.guardarCambios();
         }
-
         if (game != null) {
             game.desbloquearNivel(1);
         }
+    }
     }
 
     @Override
@@ -419,15 +420,16 @@ private boolean isTouchingRope(float touchX, float touchY) {
         /*registrarEstadisticas(1, 0, false);
         System.out.println("Reiniciando Nivel 1...");
         mostrarCuadroDerrota();*/
+        if (!perdidaProcesada) {  // Prevent multiple calls
+        perdidaProcesada = true;  // Mark as processed immediately
         registrarEstadisticas(1, estrellasRecolectadas, false);
-
-        // También registrar la partida perdida para el usuario
         Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null) {
             usuario.registrarPartidaJugada(1, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+            usuario.guardarCambios();
         }
-
         System.out.println("Reiniciando Nivel 1...");
         mostrarCuadroDerrota();
+    }
     }
 }

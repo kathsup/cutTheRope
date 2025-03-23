@@ -44,7 +44,7 @@ public class Usuario{
         this.nivelesDesbloqueados = new boolean[]{true, false, false, false, false};
         this.nivelesCompletados = new boolean[]{false, false, false, false, false};
         this.sonidoActivado = true;
-        cargarUsuarioCompleto();
+        
     }
 
     // Getters y Setters
@@ -54,7 +54,7 @@ public class Usuario{
 
     public void setSonidoActivado(boolean sonidoActivado) {
         this.sonidoActivado = sonidoActivado;
-        guardarUsuario();
+        //guardarUsuario();
     }
     
     public String getNombreUsuario() {
@@ -63,7 +63,7 @@ public class Usuario{
 
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public String getContrasena() {
@@ -72,7 +72,7 @@ public class Usuario{
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public String getNombreCompleto() {
@@ -81,7 +81,7 @@ public class Usuario{
 
     public void setNombreCompleto(String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public Date getFechaRegistro() {
@@ -90,7 +90,7 @@ public class Usuario{
 
     public void setFechaRegistro(Date fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public Date getUltimaSesion() {
@@ -99,7 +99,7 @@ public class Usuario{
 
     public void setUltimaSesion(Date ultimaSesion) {
         this.ultimaSesion = ultimaSesion;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public int getProgresoJuego() {
@@ -108,7 +108,7 @@ public class Usuario{
 
     public void setProgresoJuego(int progresoJuego) {
         this.progresoJuego = progresoJuego;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public int getPuntajeMaximo() {
@@ -116,8 +116,8 @@ public class Usuario{
     }
 
     public void setPuntajeMaximo(int puntajeMaximo) {
-        this.puntajeMaximo = puntajeMaximo;
-        guardarUsuario();
+    this.puntajeMaximo = puntajeMaximo;
+    
     }
 
     public long getTiempoTotalJugado() {
@@ -126,7 +126,7 @@ public class Usuario{
 
     public void setTiempoTotalJugado(long tiempoTotalJugado) {
         this.tiempoTotalJugado = tiempoTotalJugado;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public List<String> getHistorialPartidas() {
@@ -135,7 +135,7 @@ public class Usuario{
 
     public void setHistorialPartidas(List<String> historialPartidas) {
         this.historialPartidas = historialPartidas;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public String getAvatar() {
@@ -144,7 +144,7 @@ public class Usuario{
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public int getRanking() {
@@ -153,7 +153,7 @@ public class Usuario{
 
     public void setRanking(int ranking) {
         this.ranking = ranking;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     public String getIdioma() {
@@ -162,19 +162,24 @@ public class Usuario{
 
     public void setIdioma(String idioma) {
         this.idioma = idioma;
-        guardarUsuario();
+        //guardarUsuario();
     }
 
     // Métodos de sesión
     public boolean iniciarSesion(String contrasena) {
         if (this.contrasena.equals(contrasena)) {
             Usuario.usuarioLogueado = this;
+            this.ultimaSesion = new Date();
+            guardarUsuario(); // Aquí sí guardamos al iniciar sesión
             return true;
         }
         return false;
     }
 
-    public static void cerrarSesion() {
+     public static void cerrarSesion() {
+        if (Usuario.usuarioLogueado != null) {
+            Usuario.usuarioLogueado.guardarUsuario(); // Guardar al cerrar sesión
+        }
         Usuario.usuarioLogueado = null;
     }
 
@@ -188,14 +193,14 @@ public class Usuario{
 
     public void setNivelesDesbloqueados(boolean[] nivelesDesbloqueados) {
         this.nivelesDesbloqueados = nivelesDesbloqueados;
-        guardarUsuario();
+        //guardarUsuario();
     }
     
     public void desbloquearNivel(int nivel) {
         if (nivel < nivelesDesbloqueados.length) {
             nivelesDesbloqueados[nivel] = true;
             System.out.println("Nivel " + (nivel + 1) + " desbloqueado para el usuario " + this.nombreUsuario);
-            guardarUsuario();
+            //guardarUsuario();
         }
     }
     
@@ -210,9 +215,13 @@ public class Usuario{
     public void marcarNivelComoCompletado(int indiceNivel) {
         if (indiceNivel >= 0 && indiceNivel < nivelesCompletados.length) {
             nivelesCompletados[indiceNivel] = true;
-            guardarUsuario(); // Guardar los cambios
+            //guardarUsuario(); // Guardar los cambios
         }
     }
+    
+    public void guardarCambios() {
+    guardarUsuario();
+}
 
     // Método para guardar el usuario en un archivo binario
     public void guardarUsuario() {
@@ -313,7 +322,7 @@ public void registrarPartidaJugada(int nivel, int puntosObtenidos, long tiempoJu
     this.tiempoTotalJugado += tiempoJugado;
     
     // Guardar los cambios
-    guardarUsuario();
+    //guardarUsuario();
 }
 
 private String formatearTiempo(long milisegundos) {

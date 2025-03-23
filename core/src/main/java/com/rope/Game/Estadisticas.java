@@ -148,7 +148,7 @@ public class Estadisticas implements Screen{
             usuario.setTiempoTotalJugado(usuario.getTiempoTotalJugado() + tiempoJugado);
             
             // Guardar los cambios
-            usuario.guardarUsuario();
+            usuario.guardarCambios();
         }
     }
     
