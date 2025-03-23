@@ -86,18 +86,10 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
         // Mostrar la información del usuario
         labelNombreUsuario = new Label("", labelStyle);
         labelNombreCompleto = new Label("", labelStyle);
-        labelProgreso = new Label("", labelStyle);
-        labelPuntaje = new Label("", labelStyle);
-        labelTiempo = new Label("", labelStyle);
-        labelRanking = new Label("", labelStyle);
         labelFechaRegistro = new Label("", labelStyle);
 
         table.add(labelNombreUsuario).pad(10).row();
         table.add(labelNombreCompleto).pad(10).row();
-        table.add(labelProgreso).pad(10).row();
-        table.add(labelPuntaje).pad(10).row();
-        table.add(labelTiempo).pad(10).row();
-        table.add(labelRanking).pad(10).row();
         table.add(labelFechaRegistro).pad(10).row();
 
         // Botón para regresar
@@ -135,26 +127,37 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
 
     // Método para eliminar la cuenta
     private void eliminarCuenta() {
-        Usuario usuario = Usuario.getUsuarioLogueado();
-        if (usuario != null) {
-            String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";
-            String rutaCarpetaUsuario = rutaBase + usuario.getNombreUsuario();
+    Usuario usuario = Usuario.getUsuarioLogueado();
+    if (usuario != null) {
+        String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
+        String rutaCarpetaUsuario = rutaBase + usuario.getNombreUsuario();
 
-            // Crear un objeto File para la carpeta del usuario
-            File carpetaUsuario = new File(rutaCarpetaUsuario);
+        // Verificar la ruta de la carpeta
+        System.out.println("Ruta de la carpeta del usuario: " + rutaCarpetaUsuario);
 
-            // Eliminar la carpeta y su contenido
-            if (eliminarArchivosYCarpeta(carpetaUsuario)) {
-                System.out.println("Cuenta eliminada: " + usuario.getNombreUsuario());
+        // Crear un objeto File para la carpeta del usuario
+        File carpetaUsuario = new File(rutaCarpetaUsuario);
 
-                // Cerrar sesión y redirigir al menú de inicio
-                Usuario.cerrarSesion();
-                game.setScreen(new MenuInicio(game));
-            } else {
-                System.out.println("Error al eliminar la cuenta: No se pudo borrar la carpeta del usuario.");
-            }
+        // Verificar si la carpeta existe
+        if (!carpetaUsuario.exists()) {
+            System.out.println("La carpeta del usuario no existe: " + rutaCarpetaUsuario);
+            return;
+        }
+
+        // Cerrar sesión antes de eliminar la cuenta
+        Usuario.cerrarSesion();
+
+        // Eliminar la carpeta y su contenido
+        if (eliminarArchivosYCarpeta(carpetaUsuario)) {
+            System.out.println("Cuenta eliminada: " + usuario.getNombreUsuario());
+
+            // Redirigir al menú de inicio
+            game.setScreen(new MenuInicio(game));
+        } else {
+            System.out.println("Error al eliminar la cuenta: No se pudo borrar la carpeta del usuario.");
         }
     }
+}
 
     // Función para eliminar archivos y carpetas de manera recursiva
     private boolean eliminarArchivosYCarpeta(File file) {
@@ -177,44 +180,32 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
     }
 
     // Método para cambiar la foto de perfil (solo en desktop)
-    private void cambiarFotoPerfil() {
-        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-            FileDialog fileDialog = new FileDialog((Frame) null, "Seleccionar imagen", FileDialog.LOAD);
-            fileDialog.setFilenameFilter((dir, name) -> name.endsWith(".png") || name.endsWith(".jpg"));
-            fileDialog.setVisible(true);
+   private void cambiarFotoPerfil() {
+    if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+        FileDialog fileDialog = new FileDialog((Frame) null, "Seleccionar imagen", FileDialog.LOAD);
+        fileDialog.setFilenameFilter((dir, name) -> name.endsWith(".png") || name.endsWith(".jpg"));
+        fileDialog.setVisible(true);
 
-            String rutaArchivo = fileDialog.getDirectory() + fileDialog.getFile();
-            if (rutaArchivo != null && !rutaArchivo.isEmpty()) {
-                // Copiar la imagen seleccionada a la carpeta del usuario
-                String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";
-                String rutaCarpeta = rutaBase + Usuario.getUsuarioLogueado().getNombreUsuario() + "\\";
-                String nombreArchivo = "avatar.png"; // Nombre fijo para la imagen de perfil
-                String rutaDestino = rutaCarpeta + nombreArchivo;
+        String rutaArchivo = fileDialog.getDirectory() + fileDialog.getFile();
+        if (rutaArchivo != null && !rutaArchivo.isEmpty()) {
+            // Obtener solo el nombre del archivo (por ejemplo, "profilepic.png")
+            String nombreArchivo = new File(rutaArchivo).getName();
 
-                try {
-                    // Crear la carpeta del usuario si no existe
-                    Files.createDirectories(Paths.get(rutaCarpeta));
+            // Actualizar la referencia en el objeto Usuario
+            Usuario usuario = Usuario.getUsuarioLogueado();
+            usuario.setAvatar(nombreArchivo); // Guardar solo el nombre del archivo
+            usuario.guardarUsuario(); // Guardar los cambios en el archivo binario
 
-                    // Copiar la imagen seleccionada a la carpeta del usuario
-                    Files.copy(Paths.get(rutaArchivo), Paths.get(rutaDestino), StandardCopyOption.REPLACE_EXISTING);
-                    System.out.println("Imagen copiada a: " + rutaDestino);
+            // Actualizar la imagen en la pantalla
+            Texture nuevaTextura = new Texture(Gdx.files.internal(usuario.getAvatar()));
+            avatarImage.setDrawable(new TextureRegionDrawable(new TextureRegion(nuevaTextura)));
 
-                    // Actualizar la referencia en el objeto Usuario
-                    Usuario.getUsuarioLogueado().setAvatar(rutaDestino);
-                    Usuario.getUsuarioLogueado().guardarUsuario();
-
-                    // Actualizar la imagen en la pantalla
-                    Texture nuevaTextura = new Texture(Gdx.files.internal(rutaDestino));
-                    avatarImage.setDrawable(new TextureRegionDrawable(new TextureRegion(nuevaTextura)));
-                } catch (IOException e) {
-                    System.out.println("Error al copiar la imagen:");
-                    e.printStackTrace();
-                }
-            }
-        } else {
-            System.out.println("La función de cambiar foto de perfil solo está disponible en desktop.");
+            System.out.println("Avatar actualizado: " + nombreArchivo);
         }
+    } else {
+        System.out.println("La función de cambiar foto de perfil solo está disponible en desktop.");
     }
+}
 
     // Método para actualizar los textos según el idioma
     private void actualizarTextos() {
@@ -225,10 +216,6 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
                 case "es":
                     labelNombreUsuario.setText("Nombre de usuario: " + usuario.getNombreUsuario());
                     labelNombreCompleto.setText("Nombre completo: " + usuario.getNombreCompleto());
-                    labelProgreso.setText("Progreso en el juego: " + usuario.getProgresoJuego() + " niveles");
-                    labelPuntaje.setText("Puntaje máximo: " + usuario.getPuntajeMaximo());
-                    labelTiempo.setText("Tiempo total jugado: " + usuario.getTiempoTotalJugado() + " segundos");
-                    labelRanking.setText("Ranking: " + usuario.getRanking());
                     labelFechaRegistro.setText("Fecha de creación: " + new SimpleDateFormat("dd/MM/yyyy").format(usuario.getFechaRegistro()));
                     botonCambiarFoto.setText("Cambiar Foto de Perfil");
                     botonRegresar.setText("Regresar");
@@ -237,10 +224,6 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
                 case "en":
                     labelNombreUsuario.setText("Username: " + usuario.getNombreUsuario());
                     labelNombreCompleto.setText("Full name: " + usuario.getNombreCompleto());
-                    labelProgreso.setText("Game progress: " + usuario.getProgresoJuego() + " levels");
-                    labelPuntaje.setText("Max score: " + usuario.getPuntajeMaximo());
-                    labelTiempo.setText("Total time played: " + usuario.getTiempoTotalJugado() + " seconds");
-                    labelRanking.setText("Ranking: " + usuario.getRanking());
                     labelFechaRegistro.setText("Creation date: " + new SimpleDateFormat("dd/MM/yyyy").format(usuario.getFechaRegistro()));
                     botonCambiarFoto.setText("Change Profile Picture");
                     botonRegresar.setText("Back");
@@ -249,10 +232,6 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
                 case "fr":
                     labelNombreUsuario.setText("Nom d'utilisateur: " + usuario.getNombreUsuario());
                     labelNombreCompleto.setText("Nom complet: " + usuario.getNombreCompleto());
-                    labelProgreso.setText("Progrès du jeu: " + usuario.getProgresoJuego() + " niveaux");
-                    labelPuntaje.setText("Score maximal: " + usuario.getPuntajeMaximo());
-                    labelTiempo.setText("Temps total joué: " + usuario.getTiempoTotalJugado() + " secondes");
-                    labelRanking.setText("Classement: " + usuario.getRanking());
                     labelFechaRegistro.setText("Date de création: " + new SimpleDateFormat("dd/MM/yyyy").format(usuario.getFechaRegistro()));
                     botonCambiarFoto.setText("Changer la photo de profil");
                     botonRegresar.setText("Retour");

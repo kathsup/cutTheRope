@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+public class Usuario {
 
-public class Usuario{
-   private static Usuario usuarioLogueado;
+    private static Usuario usuarioLogueado;
 
     // Datos del usuario
     private String nombreUsuario;
@@ -25,7 +25,6 @@ public class Usuario{
     private boolean[] nivelesDesbloqueados;
     private boolean[] nivelesCompletados; // Distinto de nivelesDesbloqueados
     private boolean sonidoActivado;
-    
 
     // Constructor
     public Usuario(String nombreUsuario, String contrasena, String nombreCompleto) {
@@ -44,7 +43,7 @@ public class Usuario{
         this.nivelesDesbloqueados = new boolean[]{true, false, false, false, false};
         this.nivelesCompletados = new boolean[]{false, false, false, false, false};
         this.sonidoActivado = true;
-        
+
     }
 
     // Getters y Setters
@@ -56,7 +55,7 @@ public class Usuario{
         this.sonidoActivado = sonidoActivado;
         //guardarUsuario();
     }
-    
+
     public String getNombreUsuario() {
         return nombreUsuario;
     }
@@ -116,8 +115,8 @@ public class Usuario{
     }
 
     public void setPuntajeMaximo(int puntajeMaximo) {
-    this.puntajeMaximo = puntajeMaximo;
-    
+        this.puntajeMaximo = puntajeMaximo;
+
     }
 
     public long getTiempoTotalJugado() {
@@ -176,11 +175,11 @@ public class Usuario{
         return false;
     }
 
-     public static void cerrarSesion() {
+    public static void cerrarSesion() {
         if (Usuario.usuarioLogueado != null) {
-            Usuario.usuarioLogueado.guardarUsuario(); // Guardar al cerrar sesión
+            // No guardar al cerrar sesión si estamos eliminando la cuenta
+            Usuario.usuarioLogueado = null;
         }
-        Usuario.usuarioLogueado = null;
     }
 
     public static Usuario getUsuarioLogueado() {
@@ -195,7 +194,7 @@ public class Usuario{
         this.nivelesDesbloqueados = nivelesDesbloqueados;
         //guardarUsuario();
     }
-    
+
     public void desbloquearNivel(int nivel) {
         if (nivel < nivelesDesbloqueados.length) {
             nivelesDesbloqueados[nivel] = true;
@@ -203,10 +202,10 @@ public class Usuario{
             //guardarUsuario();
         }
     }
-    
+
     public boolean[] getNivelesCompletados() {
-    return nivelesCompletados;
-}
+        return nivelesCompletados;
+    }
 
     public void setNivelesCompletados(boolean[] nivelesCompletados) {
         this.nivelesCompletados = nivelesCompletados;
@@ -218,14 +217,14 @@ public class Usuario{
             guardarUsuario(); // Guardar los cambios
         }
     }
-    
+
     public void guardarCambios() {
-    guardarUsuario();
-}
+        guardarUsuario();
+    }
 
     // Método para guardar el usuario en un archivo binario
     public void guardarUsuario() {
-        String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";
+        String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
         String rutaCarpeta = rutaBase + nombreUsuario + "\\";
         File carpeta = new File(rutaCarpeta);
 
@@ -271,8 +270,8 @@ public class Usuario{
     }
 
     // Método para cargar toda la información del usuario desde el archivo binario
-    public void cargarUsuarioCompleto() {
-        String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios";
+    public void cargarUsuario() {
+        String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
         String rutaArchivo = rutaBase + nombreUsuario + "\\datos_usuario.dat";
         File archivo = new File(rutaArchivo);
 
@@ -317,31 +316,28 @@ public class Usuario{
             e.printStackTrace();
         }
     }
-    
+
     // En la clase Usuario, asegúrate de que se guarden y carguen correctamente estas estadísticas
-public void registrarPartidaJugada(int nivel, int puntosObtenidos, long tiempoJugado) {
-    // Formato del registro: "Nivel-Puntos-Tiempo"
-    String registro = "Nivel" + nivel + "-" + puntosObtenidos + "pts-" + formatearTiempo(tiempoJugado);
-    
-    if (this.historialPartidas == null) {
-        this.historialPartidas = new ArrayList<>();
+    public void registrarPartidaJugada(int nivel, int puntosObtenidos, long tiempoJugado) {
+        // Formato del registro: "Nivel-Puntos-Tiempo"
+        String registro = "Nivel" + nivel + "-" + puntosObtenidos + "pts-" + formatearTiempo(tiempoJugado);
+
+        if (this.historialPartidas == null) {
+            this.historialPartidas = new ArrayList<>();
+        }
+
+        this.historialPartidas.add(registro);
+        this.tiempoTotalJugado += tiempoJugado;
+
+        // Guardar los cambios
+        //guardarUsuario();
     }
-    
-    this.historialPartidas.add(registro);
-    this.tiempoTotalJugado += tiempoJugado;
-    
-    // Guardar los cambios
-     //guardarUsuario();
+
+    private String formatearTiempo(long milisegundos) {
+        long segundos = milisegundos / 1000;
+        long minutos = segundos / 60;
+        segundos %= 60;
+
+        return String.format("%02dm%02ds", minutos, segundos);
+    }
 }
-
-private String formatearTiempo(long milisegundos) {
-    long segundos = milisegundos / 1000;
-    long minutos = segundos / 60;
-    segundos %= 60;
-    
-    return String.format("%02dm%02ds", minutos, segundos);
-}
-}
-
-
-
