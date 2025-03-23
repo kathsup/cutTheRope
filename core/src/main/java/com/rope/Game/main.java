@@ -34,20 +34,36 @@ public class main extends Game{
          /*if (sonidoActivado) {
             musica.play();
         }*/
+         musica.play();
          
-         Usuario usuario = Usuario.getUsuarioLogueado();
+         /*Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null && usuario.isSonidoActivado()) {
             iniciarMusica();
-        }
+        }*/
         setScreen(new MenuInicio(this));  // Mostrar el mapa
         
 
     }
     
-    public void iniciarMusica() {
-        if (!musica.isPlaying()) {
-            musica.play();
+    public void reiniciarMusica() {
+     if (musica.isPlaying()) {
+        musica.stop(); // Detener la música si ya está sonando
+    }
+    
+    Usuario usuario = Usuario.getUsuarioLogueado();
+    
+    if (usuario != null) {
+        // Si el usuario está logueado, verificamos su configuración de sonido
+        if (usuario.isSonidoActivado()) {
+            musica.play(); // Reproducir música si el sonido está activado
+        } else {
+            // Si el sonido está desactivado, no hacemos nada o aseguramos que la música esté detenida
+            musica.stop(); 
         }
+    } else {
+        // Si no hay un usuario logueado (nuevo usuario), activar el sonido por defecto
+        musica.play(); // Reproducir música por defecto
+    }
     }
 
     public void pausarMusica() {

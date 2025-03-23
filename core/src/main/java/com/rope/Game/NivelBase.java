@@ -31,6 +31,7 @@ public abstract class NivelBase implements Screen {
     private SpriteBatch batch;
     private boolean mapaLlamado = false;
     protected boolean perdidaProcesada = false;
+    
 
     
 

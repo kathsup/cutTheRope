@@ -118,6 +118,7 @@ public class LoginScreen implements Screen {
     // Verificar la contraseña
     if (usuario.getContrasena().equals(contrasena)) {
         System.out.println("Inicio de sesión exitoso");
+        game.reiniciarMusica();
 
         // Actualizar el idioma en el IdiomaManager
         IdiomaManager.getInstancia().cambiarIdioma(usuario.getIdioma());

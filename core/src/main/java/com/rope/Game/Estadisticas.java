@@ -71,16 +71,17 @@ public class Estadisticas implements Screen{
         
         if (usuario != null) {
             // Contar niveles completados
-            int nivelesCompletados = 0;
-            boolean[] nivelesDesbloqueados = usuario.getNivelesCompletados();
-            for (int i = 0; i < nivelesDesbloqueados.length; i++) {
-                if (nivelesDesbloqueados[i]) {
-                    nivelesCompletados++;
+            //int nivelesCompletados = 0;
+            int contadorNivelesCompletados = 0;
+            boolean[] nivelesCompletados = usuario.getNivelesCompletados();
+            for (int i = 0; i < nivelesCompletados.length; i++) {
+                if (nivelesCompletados[i]) {
+                    contadorNivelesCompletados++;
                 }
             }
-            
+
             // Obtener cantidad total de niveles
-            int totalNiveles = nivelesDesbloqueados.length;
+            int totalNiveles = nivelesCompletados.length;
             
             // Obtener historial de partidas
             int partidasRealizadas = usuario.getHistorialPartidas() != null ? 
@@ -90,7 +91,7 @@ public class Estadisticas implements Screen{
             int puntosTotales = usuario.getPuntajeMaximo();
             
             // Añadir filas de estadísticas
-            agregarFilaEstadistica("Niveles Completados:", nivelesCompletados + "/" + totalNiveles, labelStyle);
+            agregarFilaEstadistica("Niveles Completados:", contadorNivelesCompletados  + "/" + totalNiveles, labelStyle);
             agregarFilaEstadistica("Partidas Realizadas:", String.valueOf(partidasRealizadas), labelStyle);
             agregarFilaEstadistica("Puntos Totales:", String.valueOf(puntosTotales), labelStyle);
             

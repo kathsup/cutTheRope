@@ -215,7 +215,7 @@ public class Usuario{
     public void marcarNivelComoCompletado(int indiceNivel) {
         if (indiceNivel >= 0 && indiceNivel < nivelesCompletados.length) {
             nivelesCompletados[indiceNivel] = true;
-            //guardarUsuario(); // Guardar los cambios
+            guardarUsuario(); // Guardar los cambios
         }
     }
     
@@ -257,6 +257,10 @@ public class Usuario{
             raf.writeInt(nivelesDesbloqueados.length);
             for (boolean nivelDesbloqueado : nivelesDesbloqueados) {
                 raf.writeBoolean(nivelDesbloqueado);
+            }
+            raf.writeInt(nivelesCompletados.length);
+            for (boolean nivelCompletado : nivelesCompletados) {
+                raf.writeBoolean(nivelCompletado);
             }
             raf.writeBoolean(sonidoActivado);
             System.out.println("Usuario guardado correctamente.");
@@ -300,6 +304,11 @@ public class Usuario{
             for (int i = 0; i < numNiveles; i++) {
                 this.nivelesDesbloqueados[i] = raf.readBoolean();
             }
+            int numNivelesCompletados = raf.readInt();
+            this.nivelesCompletados = new boolean[numNivelesCompletados];
+            for (int i = 0; i < numNivelesCompletados; i++) {
+                this.nivelesCompletados[i] = raf.readBoolean();
+            }
             this.sonidoActivado = raf.readBoolean();
 
             System.out.println("Información completa del usuario cargada correctamente.");
@@ -322,7 +331,7 @@ public void registrarPartidaJugada(int nivel, int puntosObtenidos, long tiempoJu
     this.tiempoTotalJugado += tiempoJugado;
     
     // Guardar los cambios
-    //guardarUsuario();
+     //guardarUsuario();
 }
 
 private String formatearTiempo(long milisegundos) {

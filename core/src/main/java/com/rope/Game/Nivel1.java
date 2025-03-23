@@ -384,7 +384,7 @@ private boolean isTouchingRope(float touchX, float touchY) {
                 // Sumar las estrellas recolectadas al puntaje máximo del usuario
                 int nuevoPuntaje = usuario.getPuntajeMaximo() + estrellasRecolectadas;
                 usuario.setPuntajeMaximo(nuevoPuntaje); // Actualizar el puntaje máximo
-                //usuario.guardarUsuario(); // Guardar los cambios en el archivo
+                usuario.guardarUsuario(); // Guardar los cambios en el archivo
                 System.out.println("Puntos sumados al usuario: " + estrellasRecolectadas);
             }
         }
@@ -393,6 +393,7 @@ private boolean isTouchingRope(float touchX, float touchY) {
     @Override
     public void manejarVictoria() {
         if (!mostrarCuadroVictoria) {  // Add check to prevent multiple calls
+            mostrarCuadroVictoria = true; 
         registrarEstadisticas(1, estrellasRecolectadas, true);
         mostrarCuadroVictoria();
         Usuario usuario = Usuario.getUsuarioLogueado();

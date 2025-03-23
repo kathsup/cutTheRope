@@ -54,12 +54,13 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
             public void changed(ChangeEvent event, Actor actor) {
                 
                 usuario.setSonidoActivado(!usuario.isSonidoActivado());
-                if (usuario.isSonidoActivado()) {
-                    game.iniciarMusica();
-                } else {
-                    game.pausarMusica();
-                }
-                // Cambiar el texto del botón según el estado del usuario
+
+                // Guardar el cambio
+                usuario.guardarUsuario();
+
+                // Aplicar el cambio inmediatamente usando reiniciarMusica() en lugar
+                // de iniciarMusica() o pausarMusica() directamente
+                game.reiniciarMusica();
                 botonSonido.setText(textoSonido + (usuario.isSonidoActivado() ? ": ON" : ": OFF"));
             }
         });
@@ -157,6 +158,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
+        game.reiniciarMusica();
     }
 
     @Override

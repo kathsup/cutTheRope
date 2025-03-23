@@ -14,7 +14,6 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 public class mapa implements Screen {
     
-
     private main game;
     private SpriteBatch batch;
     private Texture btnNivel1, btnNivel2, btnNivel3, btnNivel4, btnNivel5,btnSettings;

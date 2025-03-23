@@ -25,7 +25,7 @@ public class MenuInicio implements Screen {
         this.game = game;
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
+        //  game.reiniciarMusica();
         // Crear la interfaz de usuario
         crearUI();
     }
