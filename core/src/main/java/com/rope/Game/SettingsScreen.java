@@ -24,24 +24,20 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
 
-        // Registrar esta pantalla en el IdiomaManager
         IdiomaManager.getInstancia().agregarListener("SettingsScreen", this);
 
-        // Crear la interfaz de usuario
         crearUI();
         actualizarTextos();
     }
 
     private void crearUI() {
         Table table = new Table();
-        table.setFillParent(true); // Hacer que la tabla ocupe toda la pantalla
+        table.setFillParent(true);
         stage.addActor(table);
 
-        // Crear una fuente básica
         BitmapFont font = new BitmapFont();
         font.getData().setScale(2);
 
-        // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
         labelStyle.fontColor = Color.WHITE;
@@ -50,7 +46,6 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
         buttonStyle.font = font;
         buttonStyle.fontColor = Color.WHITE;
 
-        // Crear los botones
         btnPreferencias = new TextButton("", buttonStyle);
         btnMiPerfil = new TextButton("", buttonStyle);
         btnRanking = new TextButton("", buttonStyle);
@@ -58,7 +53,6 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
         btnRegresar = new TextButton("", buttonStyle);
         btnSignOut = new TextButton("", buttonStyle);
 
-        // Agregar los botones a la tabla
         table.add(btnPreferencias).pad(10).row();
         table.add(btnMiPerfil).pad(10).row();
         table.add(btnRanking).pad(10).row();
@@ -66,7 +60,6 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
         table.add(btnRegresar).pad(20).row();
         table.add(btnSignOut).pad(30).row();
 
-        // Configurar eventos de los botones
         btnPreferencias.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -84,7 +77,7 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
         btnRanking.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                    game.setScreen(new RankingScreen(game));
+                game.setScreen(new RankingScreen(game));
 
             }
         });
@@ -93,9 +86,7 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
             @Override
             public void clicked(InputEvent event, float x, float y) {
 
-                System.out.println("Estadísticas presionado");
-                // Aquí puedes cambiar a la pantalla de Estadísticas
-                 game.setScreen(new Estadisticas(game));
+                game.setScreen(new Estadisticas(game));
 
             }
         });
@@ -107,21 +98,17 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
             }
         });
 
-       btnSignOut.addListener(new ClickListener() {
-    @Override
-    public void clicked(InputEvent event, float x, float y) {
-        // Detener la música al cerrar sesión
-        game.detenerMusica();
+        btnSignOut.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                game.detenerMusica();
 
-        // Cerrar la sesión del usuario
-        Usuario.cerrarSesion();
+                Usuario.cerrarSesion();
 
-        // Redirigir al menú de inicio
-        game.setScreen(new MenuInicio(game));
-    }
-});
+                game.setScreen(new MenuInicio(game));
+            }
+        });
 
-        // Actualizar los textos según el idioma actual
     }
 
     private void actualizarTextos() {
@@ -135,7 +122,6 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
 
     @Override
     public void onIdiomaCambiado(String nuevoIdioma) {
-        // Actualizar los textos cuando el idioma cambie
         actualizarTextos();
     }
 
@@ -158,17 +144,19 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
     }
 
     @Override
-    public void pause() {}
+    public void pause() {
+    }
 
     @Override
-    public void resume() {}
+    public void resume() {
+    }
 
     @Override
-    public void hide() {}
+    public void hide() {
+    }
 
     @Override
     public void dispose() {
-        // Remover el listener cuando la pantalla se destruya
         IdiomaManager.getInstancia().removerListener("SettingsScreen");
         stage.dispose();
     }

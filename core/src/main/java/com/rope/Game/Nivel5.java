@@ -1,4 +1,3 @@
-
 package com.rope.Game;
 
 import com.badlogic.gdx.Gdx;
@@ -54,8 +53,8 @@ public class Nivel5 extends NivelBase implements Screen {
     private float forceMagnitude = 1.0f;
     private Body ballBody;
 
-    private Texture[] starTextures; // Arreglo de texturas de estrellas
-    private Vector2[] starPositions; // Arreglo de posiciones de estrellas
+    private Texture[] starTextures;
+    private Vector2[] starPositions;
     private Rectangle[] starRectangles;
     private boolean[] starCollected;
 
@@ -64,24 +63,20 @@ public class Nivel5 extends NivelBase implements Screen {
 
     private DistanceJoint distanceJoint, distanceJoint2;
     private int puntos = 0;
-     private main game;  // Referencia al objeto game para manejar el estado global del juego
+    private main game;
 
-    // Constructor que acepta game
     public Nivel5(main game) {
-        this.game = game;  // Guardar la referencia de game para usar en todo el nivel
+        this.game = game;
     }
 
     @Override
     public void show() {
-        super.show(); 
-       // setNiveles(main.getInstance().getNiveles());
-        System.out.println("Cámara inicializada: " + (camera != null));
-        
+        super.show();
+
         batch = new SpriteBatch();
         bodiesToRemove = new Array<Body>();
         tiempoInicio = System.currentTimeMillis();
 
-        // Crear el mundo de Box2D
         world = new World(new Vector2(0, -25f), true);
         debugRenderer = new Box2DDebugRenderer();
 
@@ -90,12 +85,6 @@ public class Nivel5 extends NivelBase implements Screen {
             public void beginContact(Contact contact) {
                 Fixture fixtureA = contact.getFixtureA();
                 Fixture fixtureB = contact.getFixtureB();
-
-                if (isCollidingWithStar(fixtureA, fixtureB)) {
-                    // Lógica de colisión con estrellas
-                } /*else if (isCollidingWithRana(fixtureA, fixtureB)) {
-                    handleRanaCollision(rana.getBody());
-                }*/
             }
 
             @Override
@@ -122,10 +111,9 @@ public class Nivel5 extends NivelBase implements Screen {
             new Vector2(5, -4)
         };
 
-        // Crear rectángulos para las estrellas
         starRectangles = new Rectangle[starTextures.length];
         for (int i = 0; i < starTextures.length; i++) {
-            starRectangles[i] = new Rectangle(starPositions[i].x - 1, starPositions[i].y - 1, 2, 2); // Ajusta el tamaño
+            starRectangles[i] = new Rectangle(starPositions[i].x - 1, starPositions[i].y - 1, 2, 2);
         }
 
         rana = new Rana(world, 8, -11);
@@ -135,13 +123,11 @@ public class Nivel5 extends NivelBase implements Screen {
             starCollected[i] = false;
         }
 
-        // Configurar la cámara
         camera = new OrthographicCamera(Gdx.graphics.getWidth() / PIXELS_TO_METER,
                 Gdx.graphics.getHeight() / PIXELS_TO_METER);
-        camera.position.set(0, 0, 0);  // Centrar la cámara en el origen
+        camera.position.set(0, 0, 0);
         camera.update();
 
-        // Definir el cuerpo - círculo
         BodyDef ballDef = new BodyDef();
         ballDef.type = BodyDef.BodyType.DynamicBody;
         ballDef.position.set(0, 3);
@@ -158,18 +144,15 @@ public class Nivel5 extends NivelBase implements Screen {
         ballBody = world.createBody(ballDef);
         ballBody.createFixture(fixtureDef);
 
-        // textura y crear el sprite
         boxSprite = new Sprite(new Texture("dulce.png"));
 
-        float desiredSpriteSizeInMeters = 0.05f;  // El tamaño deseado del sprite en metros
-        float spriteSizeInPixels = desiredSpriteSizeInMeters * PIXELS_TO_METER;  // Convertir a píxeles
-        boxSprite.setSize(spriteSizeInPixels, spriteSizeInPixels);  // Ajustar el tamaño del sprite
-        boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2); //centrar el sprite porque si no sale volando en las colisiones
+        float desiredSpriteSizeInMeters = 0.05f;
+        float spriteSizeInPixels = desiredSpriteSizeInMeters * PIXELS_TO_METER;
+        boxSprite.setSize(spriteSizeInPixels, spriteSizeInPixels);
+        boxSprite.setOrigin(boxSprite.getWidth() / 2, boxSprite.getHeight() / 2);
 
-        // Asignar el sprite al cuerpo 
         ballBody.setUserData(boxSprite);
 
-        //caja
         BodyDef bodyDef = new BodyDef();
         FixtureDef fixtureDEF = new FixtureDef();
 
@@ -182,51 +165,44 @@ public class Nivel5 extends NivelBase implements Screen {
         bodyBox.createFixture(fixtureDEF);
         box.dispose();
 
-        //distancia entre el punto y dulce- hacer cuerda
         DistanceJointDef distanceJointDef = new DistanceJointDef();
         distanceJointDef.bodyA = ballBody;
         distanceJointDef.bodyB = bodyBox;
         distanceJointDef.length = 10;
         distanceJoint = (DistanceJoint) world.createJoint(distanceJointDef);
 
-        // Crear cuerda en la esquina inferior izquierda
         BodyDef leftAnchorDef = new BodyDef();
         leftAnchorDef.type = BodyDef.BodyType.StaticBody;
-        leftAnchorDef.position.set(-12, 12); // Posición de la esquina inferior izquierda
+        leftAnchorDef.position.set(-12, 12);
         Body leftAnchorBody = world.createBody(leftAnchorDef);
 
         DistanceJointDef distanceJointDef2 = new DistanceJointDef();
         distanceJointDef2.bodyA = ballBody;
         distanceJointDef2.bodyB = leftAnchorBody;
-        distanceJointDef2.length = 10; // Longitud de la cuerda
+        distanceJointDef2.length = 10;
         distanceJoint2 = (DistanceJoint) world.createJoint(distanceJointDef2);
 
-        //detectar que se tocó la cuerda para soltar el dulce
         Gdx.input.setInputProcessor(new InputAdapter() {
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
                 Vector3 worldCoordinates = camera.unproject(new Vector3(screenX, screenY, 0));
 
-                // Verificar si el clic ocurrió sobre alguna cuerda
                 int touchedRope = getTouchedRope(worldCoordinates.x, worldCoordinates.y);
                 if (touchedRope != -1) {
                     switch (touchedRope) {
                         case 1:
                             if (distanceJoint != null) {
-                                System.out.println("Destruyendo la cuerda 1...");
                                 world.destroyJoint(distanceJoint);
                                 distanceJoint = null;
                             }
                             break;
                         case 2:
                             if (distanceJoint2 != null) {
-                                System.out.println("Destruyendo la cuerda 2...");
                                 world.destroyJoint(distanceJoint2);
                                 distanceJoint2 = null;
                             }
                             break;
                         default:
-                            System.out.println("No se tocó ninguna cuerda.");
                             break;
                     }
                 }
@@ -235,65 +211,14 @@ public class Nivel5 extends NivelBase implements Screen {
         });
     }
 
-    private boolean isCollidingWithStar(Fixture fixtureA, Fixture fixtureB) {
-        // La lógica de colisión con estrellas ahora se maneja en render()
-        return false;
-    }
-
     private void handleStarCollision(int starIndex) {
         if (!collidedStars.contains(starIndex)) {
             puntos += 1;
             estrellasRecolectadas += 1;
-            System.out.println("¡Colisión con estrella! Puntos: " + puntos);
             collidedStars.add(starIndex);
-            starCollected[starIndex] = true; // Marcar la estrella como recolectada
+            starCollected[starIndex] = true;
         }
     }
-
-    private boolean isCollidingWithRana(Fixture fixtureA, Fixture fixtureB) {
-        Body bodyA = fixtureA.getBody();
-        Body bodyB = fixtureB.getBody();
-
-        if (bodyA == ballBody && bodyB == rana.getBody()) {
-            return true;
-        } else if (bodyB == ballBody && bodyA == rana.getBody()) {
-            return true;
-        }
-        return false;
-    }
-
-   /* private void handleRanaCollision(Body ranaBody) {
-        if (!collidedRana.contains(ranaBody)) {
-            System.out.println("¡La rana se comió el dulce!");
-            bodiesToRemove.add(ballBody); // Marcar el dulce para eliminarlo
-            collidedRana.add(ranaBody);  // Evitar múltiples colisiones
-
-            // Liberar recursos del sprite del dulce
-            if (boxSprite != null) {
-                boxSprite.getTexture().dispose();
-                boxSprite = null;
-            }
-
-            // Cambiar la textura de la rana
-            rana.setEatingTexture();
-
-            // Programar un retraso para volver a la textura normal
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    rana.setNormalTexture();
-                }
-            }, 0.09f); // Duración de la animación de comer
-
-            // Establecer ballBody en null después de que el dulce haya sido destruido
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    ballBody = null;
-                }
-            }, 0.1f); // Pequeño retraso para asegurar que el cuerpo se haya destruido
-        }
-    }*/
 
     @Override
     public void render(float delta) {
@@ -301,19 +226,14 @@ public class Nivel5 extends NivelBase implements Screen {
         ScreenUtils.clear(0.65f, 0.53f, 0.36f, 1);
         super.render(delta);
 
-        // Actualizar el mundo de Box2D
         world.step(TIMESTEP, VELOCITYITERATIONS, POSITIONITERATIONS);
 
-        // Dibujar el debug de Box2D
         debugRenderer.render(world, camera.combined);
 
-        // Configurar la matriz de proyección para dibujar sprites
         batch.setProjectionMatrix(camera.combined);
 
-        // Dibujar los sprites
         batch.begin();
 
-        // Dibujar el dulce solo si ballBody no es null
         if (ballBody != null && boxSprite != null) {
             boxSprite.setPosition(
                     ballBody.getPosition().x - boxSprite.getWidth() / 2,
@@ -323,41 +243,32 @@ public class Nivel5 extends NivelBase implements Screen {
             boxSprite.draw(batch);
         }
 
-        // Dibujar estrellas (si las tienes)
         for (int i = 0; i < starTextures.length; i++) {
             if (!starCollected[i]) {
                 batch.draw(starTextures[i], starPositions[i].x - 1, starPositions[i].y - 1, 2, 2);
             }
         }
 
-        // Dibujar la rana (si la tienes)
         if (rana != null) {
             rana.draw(batch);
         }
 
         batch.end();
 
-        // Verificar colisiones con las estrellas
         if (ballBody != null) {
             for (int i = 0; i < starRectangles.length; i++) {
                 if (!starCollected[i] && starRectangles[i].contains(ballBody.getPosition().x, ballBody.getPosition().y)) {
-                    handleStarCollision(i); // Recolectar la estrella
+                    handleStarCollision(i);
                 }
             }
         }
 
-        // Verificar colisión con la rana
         if (rana != null && ballBody != null) {
             Vector2 ranaPos = rana.getBody().getPosition();
             Vector2 ballPos = ballBody.getPosition();
 
-            // Verificar si el dulce colisiona con la rana
-            //if (ranaPos.dst(ballPos) < 1.0f) { // Distancia de colisión
-               //handleRanaCollision(rana.getBody());
-            //}
         }
 
-        // Eliminar cuerpos marcados para eliminación
         for (Body body : bodiesToRemove) {
             world.destroyBody(body);
         }
@@ -365,39 +276,32 @@ public class Nivel5 extends NivelBase implements Screen {
     }
 
     private int getTouchedRope(float touchX, float touchY) {
-        // Verificar si ballBody es null
         if (ballBody == null) {
-            return -1; // No hay cuerda tocada
+            return -1;
         }
 
-        // Obtener la posición del dulce
         Vector2 ballPosition = ballBody.getPosition();
 
-        // Hasta donde se acepta que se tocó la cuerda
         float tolerance = 0.5f;
 
-        // Verificar si el clic está cerca de la cuerda 1 (entre ballBody y bodyBox)
         if (distanceJoint != null) {
             Vector2 boxPosition = bodyBox.getPosition();
             if (isPointNearLine(touchX, touchY, ballPosition.x, ballPosition.y, boxPosition.x, boxPosition.y, tolerance)) {
-                return 1; // Cuerda 1 tocada
+                return 1;
             }
         }
 
-        // Verificar si el clic está cerca de la cuerda 2 (entre ballBody y leftAnchorBody)
         if (distanceJoint2 != null) {
             Vector2 leftAnchorPosition = distanceJoint2.getBodyB().getPosition();
             if (isPointNearLine(touchX, touchY, ballPosition.x, ballPosition.y, leftAnchorPosition.x, leftAnchorPosition.y, tolerance)) {
-                return 2; // Cuerda 2 tocada
+                return 2;
             }
         }
 
-        return -1; // No se tocó ninguna cuerda
+        return -1;
     }
 
-// Método auxiliar para verificar si un punto está cerca de una línea
     private boolean isPointNearLine(float px, float py, float x1, float y1, float x2, float y2, float tolerance) {
-        // Calcular la distancia del punto a la línea
         float A = px - x1;
         float B = py - y1;
         float C = x2 - x1;
@@ -457,27 +361,22 @@ public class Nivel5 extends NivelBase implements Screen {
             }
         }
 
-        // Destruir la rana
         if (rana != null) {
             rana.dispose();
         }
 
-        // Destruir el mundo de Box2D
         if (world != null) {
             world.dispose();
         }
 
-        // Destruir el renderer de depuración
         if (debugRenderer != null) {
             debugRenderer.dispose();
         }
 
-        // Destruir la textura del dulce
         if (boxSprite != null && boxSprite.getTexture() != null) {
             boxSprite.getTexture().dispose();
         }
 
-        // Destruir el batch de sprites
         if (batch != null) {
             batch.dispose();
         }
@@ -485,72 +384,60 @@ public class Nivel5 extends NivelBase implements Screen {
     }
 
     @Override
-public void verificarCondicionesVictoria() {
-    if (ballBody != null && rana != null && !nivelCompletado) {
-        Vector2 ranaPos = rana.getBody().getPosition();
-        Vector2 ballPos = ballBody.getPosition();
+    public void verificarCondicionesVictoria() {
+        if (ballBody != null && rana != null && !nivelCompletado) {
+            Vector2 ranaPos = rana.getBody().getPosition();
+            Vector2 ballPos = ballBody.getPosition();
 
-        // Verificar si el dulce colisiona con la rana y se han recolectado las estrellas necesarias
-        if (ranaPos.dst(ballPos) < 2.0f && estrellasRecolectadas >= 1) { // Distancia de colisión
-            System.out.println("¡La rana se comió el dulce!");
+            if (ranaPos.dst(ballPos) < 2.0f && estrellasRecolectadas >= 1) {
 
-            // Obtener el usuario logueado
-            Usuario usuario = Usuario.getUsuarioLogueado();
-            if (usuario != null) {
-                // Sumar las estrellas recolectadas al puntaje máximo del usuario
-                int nuevoPuntaje = usuario.getPuntajeMaximo() + estrellasRecolectadas;
-                usuario.setPuntajeMaximo(nuevoPuntaje); // Actualizar el puntaje máximo
-                usuario.guardarUsuario(); // Guardar los cambios en el archivo
-                System.out.println("Puntos sumados al usuario: " + estrellasRecolectadas);
-            }
-
-            // Liberar recursos del sprite del dulce
-            if (boxSprite != null) {
-                boxSprite.getTexture().dispose();
-                boxSprite = null;
-            }
-
-            // Destruir el cuerpo del dulce
-            world.destroyBody(ballBody);
-            ballBody = null; // Marcar el dulce como comido
-
-            // Marcar el nivel como completado
-            nivelCompletado = true;
-            System.out.println("¡Nivel 5 completado!");
-
-            // Cambiar la textura de la rana
-            rana.setEatingTexture();
-
-            // Programar un retraso para volver a la textura normal
-            Timer.schedule(new Timer.Task() {
-                @Override
-                public void run() {
-                    rana.setNormalTexture();
+                Usuario usuario = Usuario.getUsuarioLogueado();
+                if (usuario != null) {
+                    int nuevoPuntaje = usuario.getPuntajeMaximo() + estrellasRecolectadas;
+                    usuario.setPuntajeMaximo(nuevoPuntaje);
+                    usuario.guardarUsuario();
                 }
-            }, 0.09f); // Duración de la animación de comer
+
+                if (boxSprite != null) {
+                    boxSprite.getTexture().dispose();
+                    boxSprite = null;
+                }
+
+                world.destroyBody(ballBody);
+                ballBody = null;
+
+                nivelCompletado = true;
+
+                rana.setEatingTexture();
+
+                Timer.schedule(new Timer.Task() {
+                    @Override
+                    public void run() {
+                        rana.setNormalTexture();
+                    }
+                }, 0.09f);
+            }
         }
     }
-}
 
     @Override
     public void manejarVictoria() {
-        if (!mostrarCuadroVictoria) { 
-//       registrarEstadisticas(5, estrellasRecolectadas, true);
-    mostrarCuadroVictoria(); 
-    
-    Usuario usuario = Usuario.getUsuarioLogueado();
-        if (usuario != null) {
-            usuario.marcarNivelComoCompletado(4); // Índice 0 para el Nivel1
-            usuario.registrarPartidaJugada(5, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
-        }
+        if (!mostrarCuadroVictoria) {
+            mostrarCuadroVictoria();
+
+            Usuario usuario = Usuario.getUsuarioLogueado();
+            if (usuario != null) {
+                usuario.marcarNivelComoCompletado(4);
+                usuario.registrarPartidaJugada(5, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+            }
         }
     }
 
     @Override
     public void verificarCondicionesPerdida() {
-        if (ballBody != null && (ballBody.getPosition().y < -15 || ballBody.getPosition().y > 18)) { 
+        if (ballBody != null && (ballBody.getPosition().y < -15 || ballBody.getPosition().y > 18)) {
 
-           perderNivel();
+            perderNivel();
 
             perderNivel();
 
@@ -559,18 +446,15 @@ public void verificarCondicionesVictoria() {
 
     @Override
     protected void reiniciarNivel() {
-         if (!perdidaProcesada) {  // Prevent multiple calls
-        perdidaProcesada = true;
-//         registrarEstadisticas(5, estrellasRecolectadas, false);
+        if (!perdidaProcesada) {
+            perdidaProcesada = true;
 
-        // También registrar la partida perdida para el usuario
-        Usuario usuario = Usuario.getUsuarioLogueado();
-        if (usuario != null) {
-            usuario.registrarPartidaJugada(5, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+            Usuario usuario = Usuario.getUsuarioLogueado();
+            if (usuario != null) {
+                usuario.registrarPartidaJugada(5, estrellasRecolectadas, System.currentTimeMillis() - tiempoInicio);
+            }
+
+            mostrarCuadroDerrota();
         }
-
-        System.out.println("Reiniciando Nivel 5...");
-        mostrarCuadroDerrota();
-         }
     }
 }

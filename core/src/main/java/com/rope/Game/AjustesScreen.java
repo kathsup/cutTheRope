@@ -12,19 +12,17 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
-
 public class AjustesScreen implements Screen {
+
     private Stage stage;
     private main game;
     private SpriteBatch batch;
     private Texture backgroundTexture;
 
-    // Textos según el idioma
     private String textoSonido;
     private String textoRegresar;
     private String textoCambiarIdioma;
 
-    // Referencia al botón de regresar
     private TextButton botonRegresar;
 
     public AjustesScreen(main game) {
@@ -34,79 +32,61 @@ public class AjustesScreen implements Screen {
         Usuario usuario = Usuario.getUsuarioLogueado();
         backgroundTexture = new Texture(Gdx.files.internal("preferencias.jpg"));
 
-        // Inicializar textos según el idioma del usuario
         actualizarTextos();
 
         BitmapFont font = new BitmapFont();
         font.getData().setScale(2);
 
-        // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
-        
-        // Crear el botón para activar/desactivar el sonido
+
         TextButton botonSonido = new TextButton(textoSonido + (usuario.isSonidoActivado() ? ": ON" : ": OFF"), buttonStyle);
         botonSonido.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Cambiar el estado del sonido
                 usuario.setSonidoActivado(!usuario.isSonidoActivado());
-
-                // Guardar el cambio
                 usuario.guardarUsuario();
 
-                // Aplicar el cambio inmediatamente
                 if (usuario.isSonidoActivado()) {
-                    game.iniciarMusica(); // Reproducir música si el sonido está activado
+                    game.iniciarMusica();
                 } else {
-                    game.detenerMusica(); // Detener música si el sonido está desactivado
+                    game.detenerMusica();
                 }
 
-                // Actualizar el texto del botón
                 botonSonido.setText(textoSonido + (usuario.isSonidoActivado() ? ": ON" : ": OFF"));
             }
         });
-        // Añadir el botón a la escena
         stage.addActor(botonSonido);
-        botonSonido.setPosition(300, 550);  // Ajusta la posición
+        botonSonido.setPosition(300, 550);
 
-        // Crear el botón para cambiar el idioma
         TextButton botonCambiarIdioma = new TextButton(textoCambiarIdioma, buttonStyle);
         botonCambiarIdioma.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Cambiar el idioma
                 cambiarIdioma();
-                // Actualizar los textos de la interfaz
                 actualizarTextos();
                 botonSonido.setText(textoSonido + (usuario.isSonidoActivado() ? ": ON" : ": OFF"));
                 botonCambiarIdioma.setText(textoCambiarIdioma);
-                // Actualizar el texto del botón de regresar
                 botonRegresar.setText(textoRegresar);
             }
         });
-        // Añadir el botón a la escena
         stage.addActor(botonCambiarIdioma);
-        botonCambiarIdioma.setPosition(300, 500);  // Ajusta la posición
+        botonCambiarIdioma.setPosition(300, 500);
 
-        // Crear el botón para regresar
         botonRegresar = new TextButton(textoRegresar, buttonStyle);
         botonRegresar.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                // Regresar a la pantalla principal de ajustes
-                game.setScreen(new SettingsScreen(game)); // Cambiar a la pantalla principal o ajustes principal
+                game.setScreen(new SettingsScreen(game));
             }
         });
-        // Añadir el botón a la escena
         stage.addActor(botonRegresar);
         botonRegresar.setPosition(300, 450);
     }
 
-    // Método para cambiar el idioma
     private void cambiarIdioma() {
         Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null) {
@@ -126,16 +106,13 @@ public class AjustesScreen implements Screen {
                     break;
             }
 
-            // Actualizar el idioma del usuario
             usuario.setIdioma(nuevoIdioma);
-            usuario.guardarUsuario(); // Guardar el cambio en el archivo binario
+            usuario.guardarUsuario();
 
-            // Notificar al IdiomaManager para que actualice los textos
             IdiomaManager.getInstancia().cambiarIdioma(nuevoIdioma);
         }
     }
 
-    // Método para actualizar los textos según el idioma
     private void actualizarTextos() {
         Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null) {
@@ -163,7 +140,6 @@ public class AjustesScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-        // Verificar si la música debe reproducirse al mostrar la pantalla
         Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null && usuario.isSonidoActivado()) {
             game.iniciarMusica();
@@ -172,7 +148,6 @@ public class AjustesScreen implements Screen {
 
     @Override
     public void render(float delta) {
-        // Renderizar la escena
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
