@@ -50,6 +50,7 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
 
         // Crear la interfaz de usuario
         crearUI();
+        actualizarTextos();
     }
 
     private void crearUI() {
@@ -128,7 +129,7 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
     private void eliminarCuenta() {
         Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null) {
-            String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios\\";
+            String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
             String rutaCarpetaUsuario = rutaBase + usuario.getNombreUsuario();
 
             // Verificar la ruta de la carpeta

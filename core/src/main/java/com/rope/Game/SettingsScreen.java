@@ -29,6 +29,7 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
 
         // Crear la interfaz de usuario
         crearUI();
+        actualizarTextos();
     }
 
     private void crearUI() {
@@ -121,7 +122,6 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
 });
 
         // Actualizar los textos según el idioma actual
-        actualizarTextos();
     }
 
     private void actualizarTextos() {

@@ -11,7 +11,9 @@ public class IdiomaManager {
     private Map<String, IdiomaListener> listeners;
 
     private IdiomaManager() {
-        this.idiomaActual = "es"; 
+        // Obtener el idioma del usuario logueado
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        this.idiomaActual = (usuario != null) ? usuario.getIdioma() : "es"; // Usar "es" como predeterminado si no hay usuario
         this.textos = new HashMap<>();
         this.listeners = new HashMap<>();
         cargarTextos();
@@ -66,9 +68,17 @@ public class IdiomaManager {
     }
 
     public void cambiarIdioma(String idioma) {
+        // Actualizar el idioma en el usuario logueado
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null) {
+            usuario.setIdioma(idioma);
+            usuario.guardarUsuario(); // Guardar el cambio en el archivo binario
+        }
+
+        // Actualizar el idioma en el IdiomaManager
         this.idiomaActual = idioma;
         cargarTextos(); // Recargar los textos con el nuevo idioma
-        notificarCambioIdioma();
+        notificarCambioIdioma(); // Notificar a los listeners
     }
 
     public String getTexto(String clave) {
