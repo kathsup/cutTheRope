@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -35,14 +36,17 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
     private TextButton botonCambiarFoto;
     private TextButton botonRegresar;
     private TextButton botonEliminarCuenta; // Nuevo botón para eliminar la cuenta
+    private SpriteBatch batch;
+    private Texture backgroundTexture;
 
     public PerfilScreen(main game) {
         this.game = game;
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
-
+        batch = new SpriteBatch();
         // Registrar esta pantalla en el IdiomaManager
         IdiomaManager.getInstancia().agregarListener("PerfilScreen", this);
+        backgroundTexture = new Texture(Gdx.files.internal("preferencias.jpg"));
 
         // Crear la interfaz de usuario
         crearUI();
@@ -58,6 +62,7 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
 
         // Crear una fuente básica
         BitmapFont font = new BitmapFont();
+        font.getData().setScale(2);
 
         // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -255,6 +260,9 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
     @Override
     public void render(float delta) {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+        batch.begin();
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
         stage.act(delta);
         stage.draw();
     }
@@ -280,6 +288,8 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
     public void dispose() {
         // Remover el listener cuando la pantalla se destruya
         IdiomaManager.getInstancia().removerListener("PerfilScreen");
+        batch.dispose();
+        backgroundTexture.dispose();
         stage.dispose();
     }
 }

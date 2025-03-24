@@ -445,7 +445,7 @@ public class Nivel3 extends NivelBase implements Screen {
    @Override
 public void render(float delta) {
     // Limpiar la pantalla
-    ScreenUtils.clear(0, 0, 0, 1);
+    ScreenUtils.clear(0.65f, 0.53f, 0.36f, 1);
     super.render(delta);
     verificarCondicionesVictoria();
     // Actualizar el mundo de Box2D

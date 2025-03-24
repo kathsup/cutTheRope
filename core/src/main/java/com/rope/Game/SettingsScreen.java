@@ -38,6 +38,7 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
 
         // Crear una fuente básica
         BitmapFont font = new BitmapFont();
+        font.getData().setScale(2);
 
         // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -139,6 +140,7 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
 
     @Override
     public void render(float delta) {
+        Gdx.gl.glClearColor(0.4f, 0.6f, 0.9f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();

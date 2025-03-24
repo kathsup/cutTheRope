@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -20,11 +22,16 @@ public class MenuInicio implements Screen {
     private TextButton botonCrearCuenta;
     private Label titulo;
     private main game;
+    private Texture fondo;
+    private SpriteBatch batch;
 
     public MenuInicio(main game) {
         this.game = game;
         stage = new Stage(new ScreenViewport());
         Gdx.input.setInputProcessor(stage);
+        fondo = new Texture("menu_inicio.png");
+        batch = new SpriteBatch();
+        
         //  game.reiniciarMusica();
         // Crear la interfaz de usuario
         crearUI();
@@ -37,6 +44,7 @@ public class MenuInicio implements Screen {
 
         // Crear una fuente básica
         BitmapFont font = new BitmapFont();
+        font.getData().setScale(2);
 
         // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -86,6 +94,10 @@ public class MenuInicio implements Screen {
         // Limpiar la pantalla
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        batch.begin();
+        batch.draw(fondo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+        
         // Dibujar el Stage
         stage.act(delta);
         stage.draw();
@@ -108,5 +120,7 @@ public class MenuInicio implements Screen {
     @Override
     public void dispose() {
         stage.dispose();
+        batch.dispose();
+        fondo.dispose();
     }
 }

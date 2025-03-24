@@ -30,6 +30,7 @@ public class LoginScreen implements Screen {
 
         // Crear una fuente básica
         BitmapFont font = new BitmapFont();
+        font.getData().setScale(2);
 
         // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -142,6 +143,7 @@ public class LoginScreen implements Screen {
     @Override
     public void render(float delta) {
         // Limpiar la pantalla
+        Gdx.gl.glClearColor(0.8f, 0.7f, 0.6f, 1); // Color de fondo
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Dibujar el Stage

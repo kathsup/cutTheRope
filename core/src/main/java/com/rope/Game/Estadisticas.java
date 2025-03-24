@@ -3,7 +3,9 @@ package com.rope.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
@@ -18,6 +20,8 @@ public class Estadisticas implements Screen{
     private main game;
     private BitmapFont font;
     private Table tablaEstadisticas;
+    private SpriteBatch batch;
+    private Texture backgroundTexture;
     
     public Estadisticas(main game) {
         this.game = game;
@@ -26,6 +30,8 @@ public class Estadisticas implements Screen{
         // Crear la fuente para el texto
         font = new BitmapFont();
         font.getData().setScale(2);
+        batch = new SpriteBatch();
+        backgroundTexture = new Texture(Gdx.files.internal("preferencias.jpg"));
         
         // Estilo para las etiquetas
         Label.LabelStyle labelStyle = new Label.LabelStyle();
@@ -173,6 +179,10 @@ public class Estadisticas implements Screen{
         Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
+         batch.begin();
+        batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        batch.end();
+        
         // Actualizar y dibujar el stage
         stage.act(delta);
         stage.draw();
@@ -203,5 +213,8 @@ public class Estadisticas implements Screen{
         if (font != null) {
             font.dispose();
         }
+        
+        batch.dispose();
+        backgroundTexture.dispose();
     }
 }
