@@ -103,7 +103,7 @@ public class LoginScreen implements Screen {
     String contrasena = campoContrasena.getText();
 
     // Verificar si el archivo del usuario existe
-    String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios\\";
+    String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
     String rutaArchivo = rutaBase + nombreUsuario + "\\datos_usuario.dat";
     File archivo = new File(rutaArchivo);
 
@@ -123,6 +123,12 @@ public class LoginScreen implements Screen {
         // Iniciar sesión
         usuario.iniciarSesion(contrasena);
         System.out.println("Usuario logueado: " + Usuario.getUsuarioLogueado().getNombreUsuario());
+
+        // Obtener el idioma del usuario
+        String idiomaUsuario = usuario.getIdioma();
+
+        // Sincronizar el idioma en IdiomaManager
+        IdiomaManager.getInstancia().cambiarIdioma(idiomaUsuario);
 
         // Iniciar la música si el usuario tiene habilitado el sonido
         game.iniciarMusica();

@@ -176,10 +176,7 @@ public class Usuario {
     }
 
     public static void cerrarSesion() {
-        if (Usuario.usuarioLogueado != null) {
-            // No guardar al cerrar sesión si estamos eliminando la cuenta
-            Usuario.usuarioLogueado = null;
-        }
+        Usuario.usuarioLogueado = null;
     }
 
     public static Usuario getUsuarioLogueado() {
@@ -224,7 +221,7 @@ public class Usuario {
 
     // Método para guardar el usuario en un archivo binario
     public void guardarUsuario() {
-        String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios\\";
+        String rutaBase = "\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
         String rutaCarpeta = rutaBase + nombreUsuario + "\\";
         File carpeta = new File(rutaCarpeta);
 
@@ -271,7 +268,7 @@ public class Usuario {
 
     // Método para cargar toda la información del usuario desde el archivo binario
     public void cargarUsuario() {
-        String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios\\";
+        String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
         String rutaArchivo = rutaBase + nombreUsuario + "\\datos_usuario.dat";
         File archivo = new File(rutaArchivo);
 

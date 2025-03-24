@@ -50,7 +50,7 @@ public class RankingScreen implements Screen {
 
     private List<String> cargarRankingUsuarios() {
         List<String> ranking = new ArrayList<>();
-        String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios\\";
+        String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
         File carpetaUsuarios = new File(rutaBase);
 
         if (carpetaUsuarios.exists() && carpetaUsuarios.isDirectory()) {
