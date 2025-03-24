@@ -31,22 +31,17 @@ public class MenuInicio implements Screen {
         Gdx.input.setInputProcessor(stage);
         fondo = new Texture("menu_inicio.png");
         batch = new SpriteBatch();
-        
-        //  game.reiniciarMusica();
-        // Crear la interfaz de usuario
         crearUI();
     }
 
     private void crearUI() {
         Table table = new Table();
-        table.setFillParent(true); // Hacer que la tabla ocupe toda la pantalla
+        table.setFillParent(true);
         stage.addActor(table);
 
-        // Crear una fuente básica
         BitmapFont font = new BitmapFont();
         font.getData().setScale(2);
 
-        // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
         labelStyle.fontColor = Color.WHITE;
@@ -55,30 +50,24 @@ public class MenuInicio implements Screen {
         buttonStyle.font = font;
         buttonStyle.fontColor = Color.WHITE;
 
-        // Definir textos directamente (sin usar IdiomaManager)
         titulo = new Label("Menú de Inicio", labelStyle);
         botonLogin = new TextButton("Iniciar Sesión", buttonStyle);
         botonCrearCuenta = new TextButton("Crear Cuenta", buttonStyle);
 
-        // Agregar los componentes a la tabla
         table.add(titulo).colspan(2).padBottom(20).row();
         table.add(botonLogin).width(200).pad(10);
         table.add(botonCrearCuenta).width(200).pad(10);
 
-        // Configurar el evento del botón de inicio de sesión
         botonLogin.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Cambiar a la pantalla de inicio de sesión
                 game.setScreen(new LoginScreen(game));
             }
         });
 
-        // Configurar el evento del botón de crear cuenta
         botonCrearCuenta.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Cambiar a la pantalla de creación de cuenta
                 game.setScreen(new CrearCuentaScreen(game));
             }
         });
@@ -86,36 +75,37 @@ public class MenuInicio implements Screen {
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage); // Habilitar el Stage para manejar la entrada
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void render(float delta) {
-        // Limpiar la pantalla
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
         batch.draw(fondo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
-        
-        // Dibujar el Stage
+
         stage.act(delta);
         stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true); // Actualizar el viewport al cambiar el tamaño de la pantalla
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
-    public void pause() {}
+    public void pause() {
+    }
 
     @Override
-    public void resume() {}
+    public void resume() {
+    }
 
     @Override
-    public void hide() {}
+    public void hide() {
+    }
 
     @Override
     public void dispose() {

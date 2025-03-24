@@ -9,7 +9,6 @@ public class Usuario {
 
     private static Usuario usuarioLogueado;
 
-    // Datos del usuario
     private String nombreUsuario;
     private String contrasena;
     private String nombreCompleto;
@@ -23,10 +22,9 @@ public class Usuario {
     private int ranking;
     private String idioma;
     private boolean[] nivelesDesbloqueados;
-    private boolean[] nivelesCompletados; // Distinto de nivelesDesbloqueados
+    private boolean[] nivelesCompletados;
     private boolean sonidoActivado;
 
-    // Constructor
     public Usuario(String nombreUsuario, String contrasena, String nombreCompleto) {
         this.nombreUsuario = nombreUsuario;
         this.contrasena = contrasena;
@@ -39,21 +37,19 @@ public class Usuario {
         this.historialPartidas = new ArrayList<>();
         this.avatar = "anonimo.png";
         this.ranking = 0;
-        this.idioma = "es"; // Idioma predeterminado
+        this.idioma = "es";
         this.nivelesDesbloqueados = new boolean[]{true, false, false, false, false};
         this.nivelesCompletados = new boolean[]{false, false, false, false, false};
         this.sonidoActivado = true;
 
     }
 
-    // Getters y Setters
     public boolean isSonidoActivado() {
         return sonidoActivado;
     }
 
     public void setSonidoActivado(boolean sonidoActivado) {
         this.sonidoActivado = sonidoActivado;
-        //guardarUsuario();
     }
 
     public String getNombreUsuario() {
@@ -62,7 +58,6 @@ public class Usuario {
 
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
-        //guardarUsuario();
     }
 
     public String getContrasena() {
@@ -71,7 +66,6 @@ public class Usuario {
 
     public void setContrasena(String contrasena) {
         this.contrasena = contrasena;
-        //guardarUsuario();
     }
 
     public String getNombreCompleto() {
@@ -80,7 +74,6 @@ public class Usuario {
 
     public void setNombreCompleto(String nombreCompleto) {
         this.nombreCompleto = nombreCompleto;
-        //guardarUsuario();
     }
 
     public Date getFechaRegistro() {
@@ -89,7 +82,6 @@ public class Usuario {
 
     public void setFechaRegistro(Date fechaRegistro) {
         this.fechaRegistro = fechaRegistro;
-        //guardarUsuario();
     }
 
     public Date getUltimaSesion() {
@@ -98,7 +90,6 @@ public class Usuario {
 
     public void setUltimaSesion(Date ultimaSesion) {
         this.ultimaSesion = ultimaSesion;
-        //guardarUsuario();
     }
 
     public int getProgresoJuego() {
@@ -107,7 +98,6 @@ public class Usuario {
 
     public void setProgresoJuego(int progresoJuego) {
         this.progresoJuego = progresoJuego;
-        //guardarUsuario();
     }
 
     public int getPuntajeMaximo() {
@@ -125,7 +115,6 @@ public class Usuario {
 
     public void setTiempoTotalJugado(long tiempoTotalJugado) {
         this.tiempoTotalJugado = tiempoTotalJugado;
-        //guardarUsuario();
     }
 
     public List<String> getHistorialPartidas() {
@@ -134,7 +123,6 @@ public class Usuario {
 
     public void setHistorialPartidas(List<String> historialPartidas) {
         this.historialPartidas = historialPartidas;
-        //guardarUsuario();
     }
 
     public String getAvatar() {
@@ -143,7 +131,6 @@ public class Usuario {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
-        //guardarUsuario();
     }
 
     public int getRanking() {
@@ -152,7 +139,6 @@ public class Usuario {
 
     public void setRanking(int ranking) {
         this.ranking = ranking;
-        //guardarUsuario();
     }
 
     public String getIdioma() {
@@ -161,7 +147,6 @@ public class Usuario {
 
     public void setIdioma(String idioma) {
         this.idioma = idioma;
-        //guardarUsuario();
     }
 
     // Métodos de sesión
@@ -169,7 +154,7 @@ public class Usuario {
         if (this.contrasena.equals(contrasena)) {
             Usuario.usuarioLogueado = this;
             this.ultimaSesion = new Date();
-            guardarUsuario(); // Aquí sí guardamos al iniciar sesión
+            guardarUsuario();
             return true;
         }
         return false;
@@ -189,14 +174,11 @@ public class Usuario {
 
     public void setNivelesDesbloqueados(boolean[] nivelesDesbloqueados) {
         this.nivelesDesbloqueados = nivelesDesbloqueados;
-        //guardarUsuario();
     }
 
     public void desbloquearNivel(int nivel) {
         if (nivel < nivelesDesbloqueados.length) {
             nivelesDesbloqueados[nivel] = true;
-            System.out.println("Nivel " + (nivel + 1) + " desbloqueado para el usuario " + this.nombreUsuario);
-            //guardarUsuario();
         }
     }
 
@@ -211,7 +193,7 @@ public class Usuario {
     public void marcarNivelComoCompletado(int indiceNivel) {
         if (indiceNivel >= 0 && indiceNivel < nivelesCompletados.length) {
             nivelesCompletados[indiceNivel] = true;
-            guardarUsuario(); // Guardar los cambios
+            guardarUsuario();
         }
     }
 
@@ -219,22 +201,18 @@ public class Usuario {
         guardarUsuario();
     }
 
-    // Método para guardar el usuario en un archivo binario
     public void guardarUsuario() {
         String rutaBase = "\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
         String rutaCarpeta = rutaBase + nombreUsuario + "\\";
         File carpeta = new File(rutaCarpeta);
 
         if (!carpeta.exists() && !carpeta.mkdirs()) {
-            System.out.println("Error al crear la carpeta.");
             return;
         }
 
         String rutaArchivo = rutaCarpeta + "datos_usuario.dat";
-        System.out.println("Guardando archivo en: " + rutaArchivo);
 
         try (RandomAccessFile raf = new RandomAccessFile(rutaArchivo, "rw")) {
-            // Guardar todos los campos
             raf.writeUTF(nombreUsuario);
             raf.writeUTF(contrasena);
             raf.writeUTF(nombreCompleto);
@@ -259,14 +237,11 @@ public class Usuario {
                 raf.writeBoolean(nivelCompletado);
             }
             raf.writeBoolean(sonidoActivado);
-            System.out.println("Usuario guardado correctamente.");
         } catch (IOException e) {
-            System.out.println("Error al guardar el usuario:");
             e.printStackTrace();
         }
     }
 
-    // Método para cargar toda la información del usuario desde el archivo binario
     public void cargarUsuario() {
         String rutaBase = "C:\\Users\\fdhg0\\Documents\\NetBeansProjects\\cutTheRope-master\\usuarios\\";
         String rutaArchivo = rutaBase + nombreUsuario + "\\datos_usuario.dat";
@@ -278,7 +253,6 @@ public class Usuario {
         }
 
         try (RandomAccessFile raf = new RandomAccessFile(archivo, "r")) {
-            // Leer todos los campos
             this.nombreUsuario = raf.readUTF();
             this.contrasena = raf.readUTF();
             this.nombreCompleto = raf.readUTF();
@@ -307,16 +281,12 @@ public class Usuario {
             }
             this.sonidoActivado = raf.readBoolean();
 
-            System.out.println("Información completa del usuario cargada correctamente.");
         } catch (IOException e) {
-            System.out.println("Error al cargar la información completa del usuario:");
             e.printStackTrace();
         }
     }
 
-    // En la clase Usuario, asegúrate de que se guarden y carguen correctamente estas estadísticas
     public void registrarPartidaJugada(int nivel, int puntosObtenidos, long tiempoJugado) {
-        // Formato del registro: "Nivel-Puntos-Tiempo"
         String registro = "Nivel" + nivel + "-" + puntosObtenidos + "pts-" + formatearTiempo(tiempoJugado);
 
         if (this.historialPartidas == null) {
@@ -326,8 +296,6 @@ public class Usuario {
         this.historialPartidas.add(registro);
         this.tiempoTotalJugado += tiempoJugado;
 
-        // Guardar los cambios
-        //guardarUsuario();
     }
 
     private String formatearTiempo(long milisegundos) {

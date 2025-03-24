@@ -23,12 +23,10 @@ public class RankingScreen implements Screen {
     private Texture backgroundTexture;
 
     private SpriteBatch batch;
-    // Textos según el idioma
     private String tituloRankingTexto;
     private String regresarTexto;
-    private String puntajeTexto; // Nueva variable para "Puntaje"
+    private String puntajeTexto; 
 
-    // Referencias a los elementos de la interfaz
     private Label tituloRanking;
     private TextButton botonRegresar;
     public RankingScreen(main game) {
@@ -37,14 +35,11 @@ public class RankingScreen implements Screen {
         Gdx.input.setInputProcessor(stage);
         batch = new SpriteBatch();
 
-        // Cargar y ordenar el ranking de usuarios
 
-        rankingUsuarios = cargarRankingUsuarios(); // Ahora es compatible con List<String>
+        rankingUsuarios = cargarRankingUsuarios(); 
         backgroundTexture = new Texture(Gdx.files.internal("preferencias.jpg"));
-        // Inicializar textos según el idioma del usuario
         actualizarTextos();
 
-        // Crear la interfaz de usuario
         crearUI();
     }
 
@@ -54,47 +49,36 @@ public class RankingScreen implements Screen {
         File carpetaUsuarios = new File(rutaBase);
 
         if (carpetaUsuarios.exists() && carpetaUsuarios.isDirectory()) {
-            // Recorrer todas las carpetas dentro de la carpeta de usuarios
             for (File carpetaUsuario : carpetaUsuarios.listFiles()) {
                 if (carpetaUsuario.isDirectory()) {
-                    // Construir la ruta correcta al archivo datos_usuario.dat dentro de la carpeta del usuario
                     String rutaArchivo = carpetaUsuario.getAbsolutePath() + "\\datos_usuario.dat";
                     File archivoDatos = new File(rutaArchivo);
 
                     if (archivoDatos.exists()) {
-                        // Crear un usuario vacío y cargar sus datos desde el archivo
-                        Usuario usuario = new Usuario(carpetaUsuario.getName(), "", ""); // Pasar el nombre de usuario al constructor
-                        usuario.cargarUsuario(); // Cargar los datos desde el archivo
+                        Usuario usuario = new Usuario(carpetaUsuario.getName(), "", ""); 
+                        usuario.cargarUsuario();
 
-                        // Agregar al ranking en formato "nombreUsuario:puntajeMaximo"
                         ranking.add(usuario.getNombreUsuario() + ":" + usuario.getPuntajeMaximo());
                     } else {
-                        System.out.println("El archivo no existe: " + rutaArchivo);
                     }
                 }
             }
         } else {
-            System.out.println("La carpeta de usuarios no existe: " + rutaBase);
         }
 
-        // Ordenar el ranking antes de devolverlo
         ordenarRanking(ranking);
 
         return ranking;
     }
 
     private void ordenarRanking(List<String> ranking) {
-        // Implementación del algoritmo de burbuja para ordenar la lista
         int n = ranking.size();
         for (int i = 0; i < n - 1; i++) {
             for (int j = 0; j < n - i - 1; j++) {
-                // Obtener los puntajes de los usuarios
                 int puntaje1 = Integer.parseInt(ranking.get(j).split(":")[1]);
                 int puntaje2 = Integer.parseInt(ranking.get(j + 1).split(":")[1]);
 
-                // Comparar los puntajes y ordenar de mayor a menor
                 if (puntaje1 < puntaje2) {
-                    // Intercambiar los elementos si están en el orden incorrecto
                     String temp = ranking.get(j);
                     ranking.set(j, ranking.get(j + 1));
                     ranking.set(j + 1, temp);
@@ -104,11 +88,9 @@ public class RankingScreen implements Screen {
     }
 
     private void crearUI() {
-        // Crear una fuente básica
         BitmapFont font = new BitmapFont();
         font.getData().setScale(2);
 
-        // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
         labelStyle.fontColor = com.badlogic.gdx.graphics.Color.WHITE;
@@ -116,22 +98,19 @@ public class RankingScreen implements Screen {
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
         buttonStyle.font = font;
 
-        // Título del ranking
         tituloRanking = new Label(tituloRankingTexto, labelStyle);
         tituloRanking.setPosition(
-            (Gdx.graphics.getWidth() - tituloRanking.getWidth()) / 2, // Centrar horizontalmente
-            Gdx.graphics.getHeight() - 100 // Posicionar en la parte superior
+            (Gdx.graphics.getWidth() - tituloRanking.getWidth()) / 2, 
+            Gdx.graphics.getHeight() - 100 
         );
         stage.addActor(tituloRanking);
 
-        // Mostrar la lista de usuarios
-        float yPos = Gdx.graphics.getHeight() - 150; // Posición inicial para la lista de usuarios
+        float yPos = Gdx.graphics.getHeight() - 150; 
         for (int i = 0; i < rankingUsuarios.size(); i++) {
             String[] usuarioInfo = rankingUsuarios.get(i).split(":");
             String nombreUsuario = usuarioInfo[0];
             int puntajeMaximo = Integer.parseInt(usuarioInfo[1]);
 
-            // Usar la variable puntajeTexto para mostrar el texto correcto según el idioma
             Label labelUsuario = new Label((i + 1) + ". " + nombreUsuario + " - " + puntajeTexto + ": " + puntajeMaximo, labelStyle);
             labelUsuario.setPosition(100, yPos); // Posicionar manualmente
             stage.addActor(labelUsuario);

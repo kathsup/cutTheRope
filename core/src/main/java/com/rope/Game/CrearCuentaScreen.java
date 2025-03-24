@@ -16,65 +16,57 @@ import java.util.Date;
 
 public class CrearCuentaScreen implements Screen {
 
-   private Stage stage;
+    private Stage stage;
     private TextField campoUsuario;
     private TextField campoContrasena;
     private TextField campoNombreCompleto;
     private TextButton botonCrearCuenta;
-    private TextButton botonRegresar; // Nuevo botón de regreso
-    private main game; // Referencia a la clase principal
+    private TextButton botonRegresar;
+    private main game;
 
     public CrearCuentaScreen(main game) {
-        this.game = game; // Recibe la instancia de la clase principal
+        this.game = game;
         stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage); // Habilitar el Stage para manejar la entrada
+        Gdx.input.setInputProcessor(stage);
 
-        // Crear una fuente básica
         BitmapFont font = new BitmapFont();
         font.getData().setScale(2);
 
-        // Crear estilos para los componentes
         Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font; // Asignar la fuente al estilo de Label
+        labelStyle.font = font;
 
         TextField.TextFieldStyle textFieldStyle = new TextField.TextFieldStyle();
-        textFieldStyle.font = font; // Asignar la fuente al estilo de TextField
-        textFieldStyle.fontColor = com.badlogic.gdx.graphics.Color.WHITE; // Color del texto
+        textFieldStyle.font = font;
+        textFieldStyle.fontColor = com.badlogic.gdx.graphics.Color.WHITE;
 
-        // Crear una textura sólida para el fondo
         com.badlogic.gdx.graphics.Pixmap pixmap = new com.badlogic.gdx.graphics.Pixmap(1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
         pixmap.setColor(com.badlogic.gdx.graphics.Color.DARK_GRAY);
         pixmap.fill();
         com.badlogic.gdx.graphics.Texture texture = new com.badlogic.gdx.graphics.Texture(pixmap);
-        pixmap.dispose(); // Liberar la memoria de la pixmap
+        pixmap.dispose();
 
-        // Asignar la textura como fondo del TextField
         textFieldStyle.background = new com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable(new com.badlogic.gdx.graphics.g2d.TextureRegion(texture));
 
         TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font; // Asignar la fuente al estilo de TextButton
-
-        // Crear la tabla para organizar los componentes
+        buttonStyle.font = font;
         Table table = new Table();
-        table.setFillParent(true); // Hacer que la tabla ocupe toda la pantalla
+        table.setFillParent(true);
         stage.addActor(table);
 
-        // Crear los componentes
         Label etiquetaUsuario = new Label("Nombre de usuario:", labelStyle);
         campoUsuario = new TextField("", textFieldStyle);
 
         Label etiquetaContrasena = new Label("Contraseña:", labelStyle);
         campoContrasena = new TextField("", textFieldStyle);
-        campoContrasena.setPasswordMode(true); // Ocultar la contraseña
-        campoContrasena.setPasswordCharacter('*'); // Carácter para ocultar la contraseña
+        campoContrasena.setPasswordMode(true);
+        campoContrasena.setPasswordCharacter('*');
 
         Label etiquetaNombreCompleto = new Label("Nombre completo:", labelStyle);
         campoNombreCompleto = new TextField("", textFieldStyle);
 
         botonCrearCuenta = new TextButton("Crear Cuenta", buttonStyle);
-        botonRegresar = new TextButton("Regresar", buttonStyle); // Nuevo botón de regreso
+        botonRegresar = new TextButton("Regresar", buttonStyle);
 
-        // Agregar los componentes a la tabla
         table.add(etiquetaUsuario).pad(10);
         table.add(campoUsuario).width(200).pad(10);
         table.row();
@@ -86,9 +78,8 @@ public class CrearCuentaScreen implements Screen {
         table.row();
         table.add(botonCrearCuenta).colspan(2).pad(20);
         table.row();
-        table.add(botonRegresar).colspan(2).pad(10); // Agregar el botón de regreso
+        table.add(botonRegresar).colspan(2).pad(10);
 
-        // Configurar el evento del botón de crear cuenta
         botonCrearCuenta.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -96,67 +87,52 @@ public class CrearCuentaScreen implements Screen {
             }
         });
 
-        // Configurar el evento del botón de regreso
         botonRegresar.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new MenuInicio(game)); // Volver al menú de inicio
+                game.setScreen(new MenuInicio(game));
             }
         });
     }
 
-    // Método para manejar la creación de cuenta
     private void crearCuenta() {
         String usuario = campoUsuario.getText();
         String contrasena = campoContrasena.getText();
         String nombreCompleto = campoNombreCompleto.getText();
-        
-         if (usuario.isEmpty() || contrasena.isEmpty() || nombreCompleto.isEmpty()) {
-        // Aquí podrías mostrar un mensaje de error
-        System.out.println("Error: Todos los campos son requeridos");
-        return;
-    }
 
-        // Crear un nuevo usuario
+        if (usuario.isEmpty() || contrasena.isEmpty() || nombreCompleto.isEmpty()) {
+            
+            return;
+        }
+
         Usuario nuevoUsuario = new Usuario(usuario, contrasena, nombreCompleto);
         nuevoUsuario.setFechaRegistro(new Date());
-        
+
         boolean[] nivelesIniciales = new boolean[]{true, false, false, false, false};
         nuevoUsuario.setNivelesDesbloqueados(nivelesIniciales);
 
-        
-        // Guardar el usuario en un archivo
         nuevoUsuario.guardarUsuario();
-        
-        
-        System.out.println("Cuenta creada:");
-        System.out.println("Usuario: " + usuario);
-        System.out.println("Contraseña: " + contrasena);
-        System.out.println("Nombre completo: " + nombreCompleto);
 
-        // Volver al menú de inicio
         game.setScreen(new MenuInicio(game));
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(stage); // Habilitar el Stage para manejar la entrada
+        Gdx.input.setInputProcessor(stage);
     }
 
     @Override
     public void render(float delta) {
-        // Limpiar la pantalla
         Gdx.gl.glClearColor(0.8f, 0.7f, 0.6f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Dibujar el Stage
         stage.act(delta);
         stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
-        stage.getViewport().update(width, height, true); // Actualizar el viewport al cambiar el tamaño de la pantalla
+        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -176,4 +152,3 @@ public class CrearCuentaScreen implements Screen {
         stage.dispose();
     }
 }
-

@@ -20,13 +20,12 @@ public class Rana {
     public Rana(World world, float x, float y) {
         this.world = world;
 
-        // Definir el cuerpo de la estrella
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;  
-        bodyDef.position.set(x, y);  // Posición en el mundo
+        bodyDef.position.set(x, y); 
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(0.5f, 0.5f);  // Tamaño de la estrella
+        shape.setAsBox(0.5f, 0.5f);  
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -37,11 +36,9 @@ public class Rana {
         body = world.createBody(bodyDef);
         body.createFixture(fixtureDef);
 
-        //imagenes de la rana
         normalTexture = new Texture("rana.png");
         eatingTexture = new Texture("ranaC.png"); 
 
-        // sprite para la rana
         sprite = new Sprite(normalTexture);
         sprite.setSize(2f, 2f);
         
@@ -51,7 +48,6 @@ public class Rana {
         shape.dispose();
     }
 
-    //  dibujar la estrella
     public void draw(SpriteBatch batch) {
         Sprite ranaSprite = (Sprite) body.getUserData();
         ranaSprite.setPosition(body.getPosition().x - ranaSprite.getWidth() / 2,
@@ -72,7 +68,6 @@ public class Rana {
         eatingTexture.dispose(); 
     }
     
-    //obtener el cuerpo 
     public Body getBody() {
         return body;
     }

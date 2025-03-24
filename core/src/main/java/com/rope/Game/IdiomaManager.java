@@ -11,9 +11,8 @@ public class IdiomaManager {
     private Map<String, IdiomaListener> listeners;
 
     private IdiomaManager() {
-        // Obtener el idioma del usuario logueado
         Usuario usuario = Usuario.getUsuarioLogueado();
-        this.idiomaActual = (usuario != null) ? usuario.getIdioma() : "es"; // Usar "es" como predeterminado si no hay usuario
+        this.idiomaActual = (usuario != null) ? usuario.getIdioma() : "es";
         this.textos = new HashMap<>();
         this.listeners = new HashMap<>();
         cargarTextos();
@@ -29,7 +28,6 @@ public class IdiomaManager {
     private void cargarTextos() {
         textos.clear();
 
-        // Textos en español
         if (idiomaActual.equals("es")) {
             textos.put("titulo_menu_inicio", "Menú de Inicio");
             textos.put("boton_iniciar_sesion", "Iniciar Sesión");
@@ -40,9 +38,7 @@ public class IdiomaManager {
             textos.put("estadisticas", "Estadísticas");
             textos.put("regresar_mapa", "Regresar al Mapa");
             textos.put("cerrar_sesion", "Cerrar sesión");
-        }
-        // Textos en inglés
-        else if (idiomaActual.equals("en")) {
+        } else if (idiomaActual.equals("en")) {
             textos.put("titulo_menu_inicio", "Main Menu");
             textos.put("boton_iniciar_sesion", "Login");
             textos.put("boton_crear_cuenta", "Create Account");
@@ -52,9 +48,7 @@ public class IdiomaManager {
             textos.put("estadisticas", "Statistics");
             textos.put("regresar_mapa", "Back to Map");
             textos.put("cerrar_sesion", "Sign out");
-        }
-        // Textos en francés
-        else if (idiomaActual.equals("fr")) {
+        } else if (idiomaActual.equals("fr")) {
             textos.put("titulo_menu_inicio", "Menu Principal");
             textos.put("boton_iniciar_sesion", "Connexion");
             textos.put("boton_crear_cuenta", "Créer un Compte");
@@ -68,21 +62,19 @@ public class IdiomaManager {
     }
 
     public void cambiarIdioma(String idioma) {
-        // Actualizar el idioma en el usuario logueado
         Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null) {
             usuario.setIdioma(idioma);
-            usuario.guardarUsuario(); // Guardar el cambio en el archivo binario
+            usuario.guardarUsuario();
         }
 
-        // Actualizar el idioma en el IdiomaManager
         this.idiomaActual = idioma;
-        cargarTextos(); // Recargar los textos con el nuevo idioma
-        notificarCambioIdioma(); // Notificar a los listeners
+        cargarTextos();
+        notificarCambioIdioma();
     }
 
     public String getTexto(String clave) {
-        return textos.getOrDefault(clave, "[" + clave + "]"); // Devuelve el texto o una clave entre corchetes si no se encuentra
+        return textos.getOrDefault(clave, "[" + clave + "]");
     }
 
     public String getIdiomaActual() {
@@ -104,6 +96,7 @@ public class IdiomaManager {
     }
 
     public interface IdiomaListener {
+
         void onIdiomaCambiado(String nuevoIdioma);
     }
 }
