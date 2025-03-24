@@ -106,13 +106,19 @@ public class SettingsScreen implements Screen, IdiomaManager.IdiomaListener {
             }
         });
 
-        btnSignOut.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.reiniciarMusica();
-                game.setScreen(new MenuInicio(game));
-            }
-        });
+       btnSignOut.addListener(new ClickListener() {
+    @Override
+    public void clicked(InputEvent event, float x, float y) {
+        // Detener la música al cerrar sesión
+        game.detenerMusica();
+
+        // Cerrar la sesión del usuario
+        Usuario.cerrarSesion();
+
+        // Redirigir al menú de inicio
+        game.setScreen(new MenuInicio(game));
+    }
+});
 
         // Actualizar los textos según el idioma actual
         actualizarTextos();

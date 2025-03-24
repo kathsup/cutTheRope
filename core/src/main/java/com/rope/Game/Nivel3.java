@@ -100,7 +100,7 @@ public class Nivel3 extends NivelBase implements Screen {
         bubble1 = new Bubble(world, 0, 0, new Texture("burbuja.png"));
 
         spike = new Spike(world, 0, -5); // Crear el Spike
-        spikeMover = new SpikeMover(spike, 0.1f, -5f, 5f, world); // Crear el hilo
+        spikeMover = new SpikeMover(spike, 0.2f, -5f, 5f, world); // Crear el hilo
         spikeMover.start(); // Iniciar el hilo
         
         world.setContactListener(new ContactListener() {
@@ -720,7 +720,7 @@ public void verificarCondicionesVictoria() {
     @Override
     public void manejarVictoria() {
          if (!mostrarCuadroVictoria) {
-        registrarEstadisticas(3, estrellasRecolectadas, true);
+//        registrarEstadisticas(3, estrellasRecolectadas, true);
     mostrarCuadroVictoria(); 
     
     Usuario usuario = Usuario.getUsuarioLogueado();
@@ -746,7 +746,7 @@ public void verificarCondicionesVictoria() {
     protected void reiniciarNivel() {
          if (!perdidaProcesada) {  // Prevent multiple calls
         perdidaProcesada = true;  
-        registrarEstadisticas(3, estrellasRecolectadas, false);
+//        registrarEstadisticas(3, estrellasRecolectadas, false);
 
         // También registrar la partida perdida para el usuario
         Usuario usuario = Usuario.getUsuarioLogueado();

@@ -20,58 +20,43 @@ public class main extends Game{
     private Music musica; 
     //public boolean sonidoActivado = true;
 
-    @Override
+     @Override
     public void create() {
-        //nivelesDesbloqueados = new boolean[]{true, false, false, false, false};  // Solo el nivel 1 está desbloqueado al inicio
-        
-        //musicaFondo = new Musica("musicaproyecto.mp3");
-        //musicaFondo.reproducir(); // Iniciar la reproducción
-
-        //setScreen(new mapa(this));  // Mostrar el mapa
+        // Inicializar la música, pero no reproducirla todavía
         musica = Gdx.audio.newMusic(Gdx.files.internal("musica.mp3"));
-         musica.setLooping(true);
+        musica.setLooping(true);
         musica.setVolume(0.5f);
-         /*if (sonidoActivado) {
-            musica.play();
-        }*/
-         musica.play();
-         
-         /*Usuario usuario = Usuario.getUsuarioLogueado();
-        if (usuario != null && usuario.isSonidoActivado()) {
-            iniciarMusica();
-        }*/
-        setScreen(new MenuInicio(this));  // Mostrar el mapa
-        
 
+        // Mostrar la pantalla de inicio
+        setScreen(new MenuInicio(this));
     }
-    
-    public void reiniciarMusica() {
-     if (musica.isPlaying()) {
-        musica.stop(); // Detener la música si ya está sonando
-    }
-    
-    Usuario usuario = Usuario.getUsuarioLogueado();
-    
-    if (usuario != null) {
-        // Si el usuario está logueado, verificamos su configuración de sonido
-        if (usuario.isSonidoActivado()) {
+
+    // Método para iniciar la música si el usuario tiene habilitado el sonido
+    public void iniciarMusica() {
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null && usuario.isSonidoActivado()) {
             musica.play(); // Reproducir música si el sonido está activado
         } else {
-            // Si el sonido está desactivado, no hacemos nada o aseguramos que la música esté detenida
-            musica.stop(); 
+            musica.stop(); // Detener la música si el sonido está desactivado
         }
-    } else {
-        // Si no hay un usuario logueado (nuevo usuario), activar el sonido por defecto
-        musica.play(); // Reproducir música por defecto
-    }
     }
 
+    // Método para detener la música
+    public void detenerMusica() {
+        musica.stop();
+    }
+    
+    // Método para pausar la música
     public void pausarMusica() {
         musica.pause();
     }
 
-    public void detenerMusica() {
-        musica.stop();
+    // Método para reanudar la música
+    public void reanudarMusica() {
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null && usuario.isSonidoActivado()) {
+            musica.play();
+        }
     }
     
     /*public void alternarSonido() {

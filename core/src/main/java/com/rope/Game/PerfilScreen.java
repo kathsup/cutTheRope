@@ -53,116 +53,110 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
     }
 
     private void crearUI() {
-        Table table = new Table();
-        table.setFillParent(true); // Hacer que la tabla ocupe toda la pantalla
-        stage.addActor(table);
+    Table table = new Table();
+    table.setFillParent(true); // Hacer que la tabla ocupe toda la pantalla
+    stage.addActor(table);
 
-        // Obtener el usuario logueado
-        Usuario usuario = Usuario.getUsuarioLogueado();
+    // Obtener el usuario logueado
+    Usuario usuario = Usuario.getUsuarioLogueado();
+
 
         // Crear una fuente básica
         BitmapFont font = new BitmapFont();
         font.getData().setScale(2);
 
-        // Crear estilos para los componentes
-        Label.LabelStyle labelStyle = new Label.LabelStyle();
-        labelStyle.font = font;
-        labelStyle.fontColor = Color.WHITE;
+    // Crear estilos para los componentes
+    Label.LabelStyle labelStyle = new Label.LabelStyle();
+    labelStyle.font = font;
+    labelStyle.fontColor = Color.WHITE;
 
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        buttonStyle.fontColor = Color.WHITE;
+    TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+    buttonStyle.font = font;
+    buttonStyle.fontColor = Color.WHITE;
 
-        // Mostrar la imagen del usuario (avatar)
-        Texture avatarTexture = new Texture(Gdx.files.internal(usuario.getAvatar()));
-        avatarImage = new Image(avatarTexture);
-        table.add(avatarImage).size(100, 100).pad(10).row();
+    // Mostrar la imagen del usuario (avatar)
+    Texture avatarTexture = new Texture(Gdx.files.internal(usuario.getAvatar()));
+    avatarImage = new Image(avatarTexture);
+    table.add(avatarImage).size(100, 100).pad(10).row();
 
-        // Botón para cambiar la foto de perfil
-        botonCambiarFoto = new TextButton("", buttonStyle);
-        botonCambiarFoto.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                cambiarFotoPerfil();
-            }
-        });
-        table.add(botonCambiarFoto).colspan(2).pad(10).row();
+    // Botón para cambiar la foto de perfil
+    botonCambiarFoto = new TextButton("", buttonStyle);
+    botonCambiarFoto.addListener(new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            cambiarFotoPerfil();
+        }
+    });
+    table.add(botonCambiarFoto).colspan(2).pad(10).row();
 
-        // Mostrar la información del usuario
-        labelNombreUsuario = new Label("", labelStyle);
-        labelNombreCompleto = new Label("", labelStyle);
-        labelFechaRegistro = new Label("", labelStyle);
+    // Mostrar la información del usuario
+    labelNombreUsuario = new Label("", labelStyle);
+    labelNombreCompleto = new Label("", labelStyle);
+    labelFechaRegistro = new Label("", labelStyle);
 
-        table.add(labelNombreUsuario).pad(10).row();
-        table.add(labelNombreCompleto).pad(10).row();
-        table.add(labelFechaRegistro).pad(10).row();
+    table.add(labelNombreUsuario).pad(10).row();
+    table.add(labelNombreCompleto).pad(10).row();
+    table.add(labelFechaRegistro).pad(10).row();
 
-        // Botón para regresar
-        botonRegresar = new TextButton("", buttonStyle);
-        botonRegresar.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                game.setScreen(new SettingsScreen(game));
-            }
-        });
-        table.add(botonRegresar).colspan(2).pad(20);
+    // Botón para regresar
+    botonRegresar = new TextButton("", buttonStyle);
+    botonRegresar.addListener(new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            game.setScreen(new SettingsScreen(game));
+        }
+    });
+    table.add(botonRegresar).colspan(2).pad(20).row();
 
-        // Botón para eliminar la cuenta (en la esquina inferior derecha)
-        // Botón para eliminar la cuenta (en la esquina inferior derecha, pero más centrado)
-        botonEliminarCuenta = new TextButton("", buttonStyle);
-        botonEliminarCuenta.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                eliminarCuenta();
-            }
-        });
+    // Botón para eliminar la cuenta (centrado en la parte inferior)
+    botonEliminarCuenta = new TextButton("", buttonStyle);
+    botonEliminarCuenta.addListener(new ClickListener() {
+        @Override
+        public void clicked(InputEvent event, float x, float y) {
+            eliminarCuenta();
+        }
+    });
 
-// Posicionar el botón en la esquina inferior derecha, pero con un margen más pequeño
-        float marginRight = 100; // Margen derecho de 100px (ajusta este valor según sea necesario)
-        float marginBottom = 20; // Margen inferior de 20px
-        botonEliminarCuenta.setPosition(
-                Gdx.graphics.getWidth() - botonEliminarCuenta.getWidth() - marginRight, // Margen derecho ajustado
-                marginBottom // Margen inferior
-        );
-        stage.addActor(botonEliminarCuenta); // Agregar el botón directamente al stagectamente al stage
+    // Agregar el botón de eliminar cuenta al final de la tabla, centrado
+    table.add(botonEliminarCuenta).colspan(2).pad(50).row();
 
-        // Actualizar los textos según el idioma actual
-        actualizarTextos();
-    }
+    // Actualizar los textos según el idioma actual
+    actualizarTextos();
+}
 
     // Método para eliminar la cuenta
     private void eliminarCuenta() {
-    Usuario usuario = Usuario.getUsuarioLogueado();
-    if (usuario != null) {
-        String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios\\";
-        String rutaCarpetaUsuario = rutaBase + usuario.getNombreUsuario();
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null) {
+            String rutaBase = "C:\\Users\\Lenovo\\Desktop\\gameRope\\usuarios\\";
+            String rutaCarpetaUsuario = rutaBase + usuario.getNombreUsuario();
 
-        // Verificar la ruta de la carpeta
-        System.out.println("Ruta de la carpeta del usuario: " + rutaCarpetaUsuario);
+            // Verificar la ruta de la carpeta
+            System.out.println("Ruta de la carpeta del usuario: " + rutaCarpetaUsuario);
 
-        // Crear un objeto File para la carpeta del usuario
-        File carpetaUsuario = new File(rutaCarpetaUsuario);
+            // Crear un objeto File para la carpeta del usuario
+            File carpetaUsuario = new File(rutaCarpetaUsuario);
 
-        // Verificar si la carpeta existe
-        if (!carpetaUsuario.exists()) {
-            System.out.println("La carpeta del usuario no existe: " + rutaCarpetaUsuario);
-            return;
-        }
+            // Verificar si la carpeta existe
+            if (!carpetaUsuario.exists()) {
+                System.out.println("La carpeta del usuario no existe: " + rutaCarpetaUsuario);
+                return;
+            }
 
-        // Cerrar sesión antes de eliminar la cuenta
-        Usuario.cerrarSesion();
+            // Cerrar sesión antes de eliminar la cuenta
+            Usuario.cerrarSesion();
 
-        // Eliminar la carpeta y su contenido
-        if (eliminarArchivosYCarpeta(carpetaUsuario)) {
-            System.out.println("Cuenta eliminada: " + usuario.getNombreUsuario());
+            // Eliminar la carpeta y su contenido
+            if (eliminarArchivosYCarpeta(carpetaUsuario)) {
+                System.out.println("Cuenta eliminada: " + usuario.getNombreUsuario());
 
-            // Redirigir al menú de inicio
-            game.setScreen(new MenuInicio(game));
-        } else {
-            System.out.println("Error al eliminar la cuenta: No se pudo borrar la carpeta del usuario.");
+                // Redirigir al menú de inicio
+                game.setScreen(new MenuInicio(game));
+            } else {
+                System.out.println("Error al eliminar la cuenta: No se pudo borrar la carpeta del usuario.");
+            }
         }
     }
-}
 
     // Función para eliminar archivos y carpetas de manera recursiva
     private boolean eliminarArchivosYCarpeta(File file) {
@@ -185,32 +179,32 @@ public class PerfilScreen implements Screen, IdiomaManager.IdiomaListener {
     }
 
     // Método para cambiar la foto de perfil (solo en desktop)
-   private void cambiarFotoPerfil() {
-    if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
-        FileDialog fileDialog = new FileDialog((Frame) null, "Seleccionar imagen", FileDialog.LOAD);
-        fileDialog.setFilenameFilter((dir, name) -> name.endsWith(".png") || name.endsWith(".jpg"));
-        fileDialog.setVisible(true);
+    private void cambiarFotoPerfil() {
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop) {
+            FileDialog fileDialog = new FileDialog((Frame) null, "Seleccionar imagen", FileDialog.LOAD);
+            fileDialog.setFilenameFilter((dir, name) -> name.endsWith(".png") || name.endsWith(".jpg"));
+            fileDialog.setVisible(true);
 
-        String rutaArchivo = fileDialog.getDirectory() + fileDialog.getFile();
-        if (rutaArchivo != null && !rutaArchivo.isEmpty()) {
-            // Obtener solo el nombre del archivo (por ejemplo, "profilepic.png")
-            String nombreArchivo = new File(rutaArchivo).getName();
+            String rutaArchivo = fileDialog.getDirectory() + fileDialog.getFile();
+            if (rutaArchivo != null && !rutaArchivo.isEmpty()) {
+                // Obtener solo el nombre del archivo (por ejemplo, "profilepic.png")
+                String nombreArchivo = new File(rutaArchivo).getName();
 
-            // Actualizar la referencia en el objeto Usuario
-            Usuario usuario = Usuario.getUsuarioLogueado();
-            usuario.setAvatar(nombreArchivo); // Guardar solo el nombre del archivo
-            usuario.guardarUsuario(); // Guardar los cambios en el archivo binario
+                // Actualizar la referencia en el objeto Usuario
+                Usuario usuario = Usuario.getUsuarioLogueado();
+                usuario.setAvatar(nombreArchivo); // Guardar solo el nombre del archivo
+                usuario.guardarUsuario(); // Guardar los cambios en el archivo binario
 
-            // Actualizar la imagen en la pantalla
-            Texture nuevaTextura = new Texture(Gdx.files.internal(usuario.getAvatar()));
-            avatarImage.setDrawable(new TextureRegionDrawable(new TextureRegion(nuevaTextura)));
+                // Actualizar la imagen en la pantalla
+                Texture nuevaTextura = new Texture(Gdx.files.internal(usuario.getAvatar()));
+                avatarImage.setDrawable(new TextureRegionDrawable(new TextureRegion(nuevaTextura)));
 
-            System.out.println("Avatar actualizado: " + nombreArchivo);
+                System.out.println("Avatar actualizado: " + nombreArchivo);
+            }
+        } else {
+            System.out.println("La función de cambiar foto de perfil solo está disponible en desktop.");
         }
-    } else {
-        System.out.println("La función de cambiar foto de perfil solo está disponible en desktop.");
     }
-}
 
     // Método para actualizar los textos según el idioma
     private void actualizarTextos() {

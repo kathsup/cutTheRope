@@ -12,10 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import java.util.ArrayList;
-import java.util.List;
 
-public class Estadisticas implements Screen{
+public class Estadisticas implements Screen {
     private Stage stage;
     private main game;
     private BitmapFont font;
@@ -23,61 +21,67 @@ public class Estadisticas implements Screen{
     private SpriteBatch batch;
     private Texture backgroundTexture;
     
+
+
+    // Textos según el idioma
+    private String tituloEstadisticasTexto;
+    private String nivelesCompletadosTexto;
+    private String partidasRealizadasTexto;
+    private String puntosTotalesTexto;
+    private String tiempoTotalTexto;
+    private String usuarioTexto;
+    private String regresarTexto;
+
+    // Referencias a los elementos de la interfaz
+    private Label tituloEstadisticas;
+    private Label labelNivelesCompletados;
+    private Label labelPartidasRealizadas;
+    private Label labelPuntosTotales;
+    private Label labelTiempoTotal;
+    private Label labelUsuario;
+    private TextButton botonRegresar;
+    
+
+
     public Estadisticas(main game) {
         this.game = game;
         this.stage = new Stage();
-        
+
         // Crear la fuente para el texto
         font = new BitmapFont();
         font.getData().setScale(2);
+
         batch = new SpriteBatch();
         backgroundTexture = new Texture(Gdx.files.internal("preferencias.jpg"));
         
+
+
+        // Inicializar textos según el idioma del usuario
+        actualizarTextos();
+
+        // Crear los elementos de la interfaz
+        crearInterfaz();
+
+        // Crear botón de regresar
+        crearBotonRegresar();
+    }
+
+    private void crearInterfaz() {
+
         // Estilo para las etiquetas
         Label.LabelStyle labelStyle = new Label.LabelStyle();
         labelStyle.font = font;
-        
-        // Estilo para los botones (como estaba en tu código original)
-        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
-        buttonStyle.font = font;
-        
-        // Crear botón de regresar
-        TextButton botonRegresar = new TextButton("Regresar", buttonStyle);
-        botonRegresar.addListener(new ChangeListener() {
-            @Override
-            public void changed(ChangeListener.ChangeEvent event, Actor actor) {
-                // Regresar a la pantalla principal de ajustes
-                game.setScreen(new SettingsScreen(game));
-            }
-        });
-        
-        // Configurar la posición del botón como en tu código original
-        botonRegresar.setPosition(300, 100);
-        
-        // Crear la tabla de estadísticas
-        crearTablaEstadisticas(labelStyle);
-        
-        // Añadir los componentes al stage
-        stage.addActor(tablaEstadisticas);
-        stage.addActor(botonRegresar);
-    }
-    
-    private void crearTablaEstadisticas(Label.LabelStyle labelStyle) {
-        // Crear la tabla para las estadísticas
-        tablaEstadisticas = new Table();
-        tablaEstadisticas.setPosition(100, 400);
-        tablaEstadisticas.setSize(500, 300);
-        
-        // Título de la tabla
-        Label tituloEstadisticas = new Label("ESTADÍSTICAS DEL USUARIO", labelStyle);
-        tablaEstadisticas.add(tituloEstadisticas).colspan(2).padBottom(40).row();
-        
+
+        // Título de la pantalla
+        tituloEstadisticas = new Label(tituloEstadisticasTexto, labelStyle);
+        tituloEstadisticas.setPosition(100, Gdx.graphics.getHeight() - 100); // Posición del título
+        stage.addActor(tituloEstadisticas);
+
         // Obtener el usuario actual
         Usuario usuario = Usuario.getUsuarioLogueado();
-        
+
         if (usuario != null) {
             // Contar niveles completados
-            //int nivelesCompletados = 0;
             int contadorNivelesCompletados = 0;
             boolean[] nivelesCompletados = usuario.getNivelesCompletados();
             for (int i = 0; i < nivelesCompletados.length; i++) {
@@ -88,40 +92,71 @@ public class Estadisticas implements Screen{
 
             // Obtener cantidad total de niveles
             int totalNiveles = nivelesCompletados.length;
-            
+
             // Obtener historial de partidas
             int partidasRealizadas = usuario.getHistorialPartidas() != null ? 
                                     usuario.getHistorialPartidas().size() : 0;
-            
+
             // Obtener puntos totales
             int puntosTotales = usuario.getPuntajeMaximo();
-            
-            // Añadir filas de estadísticas
-            agregarFilaEstadistica("Niveles Completados:", contadorNivelesCompletados  + "/" + totalNiveles, labelStyle);
-            agregarFilaEstadistica("Partidas Realizadas:", String.valueOf(partidasRealizadas), labelStyle);
-            agregarFilaEstadistica("Puntos Totales:", String.valueOf(puntosTotales), labelStyle);
-            
+
             // Tiempo total jugado formateado
             long tiempoTotal = usuario.getTiempoTotalJugado(); // en milisegundos
             String tiempoFormateado = formatearTiempo(tiempoTotal);
-            agregarFilaEstadistica("Tiempo Total Jugado:", tiempoFormateado, labelStyle);
-            
+
             // Nombre de usuario
-            agregarFilaEstadistica("Usuario:", usuario.getNombreUsuario(), labelStyle);
+            String nombreUsuario = usuario.getNombreUsuario();
+
+            // Crear y posicionar las etiquetas de estadísticas
+            labelNivelesCompletados = new Label(nivelesCompletadosTexto + contadorNivelesCompletados + "/" + totalNiveles, labelStyle);
+            labelNivelesCompletados.setPosition(100, Gdx.graphics.getHeight() - 150);
+            stage.addActor(labelNivelesCompletados);
+
+            labelPartidasRealizadas = new Label(partidasRealizadasTexto + partidasRealizadas, labelStyle);
+            labelPartidasRealizadas.setPosition(100, Gdx.graphics.getHeight() - 200);
+            stage.addActor(labelPartidasRealizadas);
+
+            labelPuntosTotales = new Label(puntosTotalesTexto + puntosTotales, labelStyle);
+            labelPuntosTotales.setPosition(100, Gdx.graphics.getHeight() - 250);
+            stage.addActor(labelPuntosTotales);
+
+            labelTiempoTotal = new Label(tiempoTotalTexto + tiempoFormateado, labelStyle);
+            labelTiempoTotal.setPosition(100, Gdx.graphics.getHeight() - 300);
+            stage.addActor(labelTiempoTotal);
+
+            labelUsuario = new Label(usuarioTexto + nombreUsuario, labelStyle);
+            labelUsuario.setPosition(100, Gdx.graphics.getHeight() - 350);
+            stage.addActor(labelUsuario);
         } else {
             // Si no hay usuario logueado
-            tablaEstadisticas.add(new Label("No hay usuario logueado", labelStyle)).colspan(2).row();
+            Label labelNoUsuario = new Label("No hay usuario logueado", labelStyle);
+            labelNoUsuario.setPosition(100, Gdx.graphics.getHeight() - 150);
+            stage.addActor(labelNoUsuario);
         }
     }
-    
-    private void agregarFilaEstadistica(String titulo, String valor, Label.LabelStyle estilo) {
-        Label labelTitulo = new Label(titulo, estilo);
-        Label labelValor = new Label(valor, estilo);
-        
-        tablaEstadisticas.add(labelTitulo).padRight(50).padBottom(15);
-        tablaEstadisticas.add(labelValor).padBottom(15).row();
+
+    private void crearBotonRegresar() {
+        // Estilo para los botones
+        TextButton.TextButtonStyle buttonStyle = new TextButton.TextButtonStyle();
+        buttonStyle.font = font;
+
+        // Crear botón de regresar
+        botonRegresar = new TextButton(regresarTexto, buttonStyle);
+        botonRegresar.addListener(new ChangeListener() {
+            @Override
+            public void changed(ChangeEvent event, Actor actor) {
+                // Regresar a la pantalla principal de ajustes
+                game.setScreen(new SettingsScreen(game));
+            }
+        });
+
+        // Configurar la posición del botón
+        botonRegresar.setPosition(100, 50);
+
+        // Añadir el botón al stage
+        stage.addActor(botonRegresar);
     }
-    
+
     // Método para formatear el tiempo total en horas:minutos:segundos
     private String formatearTiempo(long milisegundos) {
         long segundos = milisegundos / 1000;
@@ -129,43 +164,45 @@ public class Estadisticas implements Screen{
         segundos %= 3600;
         long minutos = segundos / 60;
         segundos %= 60;
-        
+
         return String.format("%02d:%02d:%02d", horas, minutos, segundos);
     }
-    
-    // Método estático para registrar una nueva partida en el historial del usuario
-    public static void registrarPartida(Usuario usuario, int nivelJugado, int puntosObtenidos, long tiempoJugado) {
+
+    // Método para actualizar los textos según el idioma
+    private void actualizarTextos() {
+        Usuario usuario = Usuario.getUsuarioLogueado();
         if (usuario != null) {
-            // Crear un registro de la partida con formato: "Nivel-Puntos-Tiempo"
-            String registro = "Nivel" + nivelJugado + "-" + puntosObtenidos + "pts-" + formatearTiempoCorto(tiempoJugado);
-            
-            // Obtener la lista actual de partidas
-            List<String> historial = usuario.getHistorialPartidas();
-            if (historial == null) {
-                historial = new ArrayList<>();
+            String idioma = usuario.getIdioma();
+            switch (idioma) {
+                case "es":
+                    tituloEstadisticasTexto = "ESTADÍSTICAS DEL USUARIO";
+                    nivelesCompletadosTexto = "Niveles Completados: ";
+                    partidasRealizadasTexto = "Partidas Realizadas: ";
+                    puntosTotalesTexto = "Puntos Totales: ";
+                    tiempoTotalTexto = "Tiempo Total Jugado: ";
+                    usuarioTexto = "Usuario: ";
+                    regresarTexto = "Regresar";
+                    break;
+                case "en":
+                    tituloEstadisticasTexto = "USER STATISTICS";
+                    nivelesCompletadosTexto = "Completed Levels: ";
+                    partidasRealizadasTexto = "Games Played: ";
+                    puntosTotalesTexto = "Total Points: ";
+                    tiempoTotalTexto = "Total Played Time: ";
+                    usuarioTexto = "User: ";
+                    regresarTexto = "Back";
+                    break;
+                case "fr":
+                    tituloEstadisticasTexto = "STATISTIQUES DE L'UTILISATEUR";
+                    nivelesCompletadosTexto = "Niveaux Complétés: ";
+                    partidasRealizadasTexto = "Parties Jouées: ";
+                    puntosTotalesTexto = "Points Totaux: ";
+                    tiempoTotalTexto = "Temps Total Joué: ";
+                    usuarioTexto = "Utilisateur: ";
+                    regresarTexto = "Retour";
+                    break;
             }
-            
-            // Añadir el nuevo registro
-            historial.add(registro);
-            
-            // Actualizar el historial en el usuario
-            usuario.setHistorialPartidas(historial);
-            
-            // Actualizar el tiempo total jugado
-            usuario.setTiempoTotalJugado(usuario.getTiempoTotalJugado() + tiempoJugado);
-            
-            // Guardar los cambios
-            usuario.guardarCambios();
         }
-    }
-    
-    // Método auxiliar para formatear el tiempo en formato corto (para el historial)
-    private static String formatearTiempoCorto(long milisegundos) {
-        long segundos = milisegundos / 1000;
-        long minutos = segundos / 60;
-        segundos %= 60;
-        
-        return String.format("%02dm%02ds", minutos, segundos);
     }
 
     @Override
@@ -178,11 +215,13 @@ public class Estadisticas implements Screen{
         // Limpiar la pantalla
         Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         
          batch.begin();
         batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         batch.end();
         
+
         // Actualizar y dibujar el stage
         stage.act(delta);
         stage.draw();

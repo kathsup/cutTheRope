@@ -98,7 +98,7 @@ public class LoginScreen implements Screen {
         });
     }
 
-    private void iniciarSesion() {
+  private void iniciarSesion() {
     String nombreUsuario = campoUsuario.getText();
     String contrasena = campoContrasena.getText();
 
@@ -119,14 +119,13 @@ public class LoginScreen implements Screen {
     // Verificar la contraseña
     if (usuario.getContrasena().equals(contrasena)) {
         System.out.println("Inicio de sesión exitoso");
-        game.reiniciarMusica();
-
-        // Actualizar el idioma en el IdiomaManager
-        IdiomaManager.getInstancia().cambiarIdioma(usuario.getIdioma());
 
         // Iniciar sesión
         usuario.iniciarSesion(contrasena);
         System.out.println("Usuario logueado: " + Usuario.getUsuarioLogueado().getNombreUsuario());
+
+        // Iniciar la música si el usuario tiene habilitado el sonido
+        game.iniciarMusica();
 
         // Navegar a la pantalla principal (mapa)
         game.setScreen(new mapa(game));
@@ -134,7 +133,6 @@ public class LoginScreen implements Screen {
         System.out.println("Usuario o contraseña incorrectos");
     }
 }
-
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage); // Habilitar el Stage para manejar la entrada

@@ -40,7 +40,7 @@ public class Spike {
         
 
         // sprite para la rana
-        sprite = new Sprite(new Texture("spike.png"));
+        sprite = new Sprite(new Texture("barra.jpg"));
         sprite.setSize(5f, 1f);
         sprite.setOrigin(sprite.getWidth() / 2, sprite.getHeight() / 2); 
         
