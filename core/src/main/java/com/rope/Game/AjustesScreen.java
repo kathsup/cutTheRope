@@ -13,7 +13,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 
-  public class AjustesScreen implements Screen {
+public class AjustesScreen implements Screen {
     private Stage stage;
     private main game;
     private SpriteBatch batch;
@@ -52,15 +52,20 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
         botonSonido.addListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                
+                // Cambiar el estado del sonido
                 usuario.setSonidoActivado(!usuario.isSonidoActivado());
 
                 // Guardar el cambio
                 usuario.guardarUsuario();
 
-                // Aplicar el cambio inmediatamente usando reiniciarMusica() en lugar
-                // de iniciarMusica() o pausarMusica() directamente
-                game.reiniciarMusica();
+                // Aplicar el cambio inmediatamente
+                if (usuario.isSonidoActivado()) {
+                    game.iniciarMusica(); // Reproducir música si el sonido está activado
+                } else {
+                    game.detenerMusica(); // Detener música si el sonido está desactivado
+                }
+
+                // Actualizar el texto del botón
                 botonSonido.setText(textoSonido + (usuario.isSonidoActivado() ? ": ON" : ": OFF"));
             }
         });
@@ -102,33 +107,33 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
     }
 
     // Método para cambiar el idioma
-   private void cambiarIdioma() {
-    Usuario usuario = Usuario.getUsuarioLogueado();
-    if (usuario != null) {
-        String nuevoIdioma;
-        switch (usuario.getIdioma()) {
-            case "es":
-                nuevoIdioma = "en";
-                break;
-            case "en":
-                nuevoIdioma = "fr";
-                break;
-            case "fr":
-                nuevoIdioma = "es";
-                break;
-            default:
-                nuevoIdioma = "es";
-                break;
+    private void cambiarIdioma() {
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null) {
+            String nuevoIdioma;
+            switch (usuario.getIdioma()) {
+                case "es":
+                    nuevoIdioma = "en";
+                    break;
+                case "en":
+                    nuevoIdioma = "fr";
+                    break;
+                case "fr":
+                    nuevoIdioma = "es";
+                    break;
+                default:
+                    nuevoIdioma = "es";
+                    break;
+            }
+
+            // Actualizar el idioma del usuario
+            usuario.setIdioma(nuevoIdioma);
+            usuario.guardarUsuario(); // Guardar el cambio en el archivo binario
+
+            // Notificar al IdiomaManager para que actualice los textos
+            IdiomaManager.getInstancia().cambiarIdioma(nuevoIdioma);
         }
-
-        // Actualizar el idioma del usuario
-        usuario.setIdioma(nuevoIdioma);
-        usuario.guardarUsuario(); // Guardar el cambio en el archivo binario
-
-        // Notificar al IdiomaManager para que actualice los textos
-        IdiomaManager.getInstancia().cambiarIdioma(nuevoIdioma);
     }
-}
 
     // Método para actualizar los textos según el idioma
     private void actualizarTextos() {
@@ -158,7 +163,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-        game.reiniciarMusica();
+        // Verificar si la música debe reproducirse al mostrar la pantalla
+        Usuario usuario = Usuario.getUsuarioLogueado();
+        if (usuario != null && usuario.isSonidoActivado()) {
+            game.iniciarMusica();
+        }
     }
 
     @Override
@@ -197,5 +206,4 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
     @Override
     public void resume() {
     }
-
 }
